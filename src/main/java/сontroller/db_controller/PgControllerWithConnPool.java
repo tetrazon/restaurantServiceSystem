@@ -13,7 +13,16 @@ import java.util.List;
 public class PgControllerWithConnPool implements Controller {
 
     @Override
-    public void addClient(Client client) {
+    public void registerClient(Client client) {
+        Connection connection = ConnectionPool.getInstance().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement()){
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString("name"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
 
     }
 
@@ -28,15 +37,15 @@ public class PgControllerWithConnPool implements Controller {
     }
 
     public void getAllUsers(){
-        Connection connection = ConnectionPool.getInstance().getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT name FROM clients;")){
+       /* Connection connection = ConnectionPool.getInstance().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT")){
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 System.out.println(resultSet.getString("name"));
             }
             } catch (SQLException ex) {
             ex.printStackTrace();
-        }
+        }*/
     }
 
     @Override

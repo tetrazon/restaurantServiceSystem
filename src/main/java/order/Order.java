@@ -10,7 +10,7 @@ import java.util.Date;
 public class Order {
 
     private Timestamp timestamp;
-    private int table;
+    private Table table;
     private ArrayList<DishesInOrder> dishes;
     private float invoice;
     private OrderStatus orderStatus;
