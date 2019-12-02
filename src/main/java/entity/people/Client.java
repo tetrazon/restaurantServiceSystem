@@ -1,17 +1,23 @@
-package people;
+package entity.people;
 
 import entity.order.Order;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Client extends Person {
 
     private double deposit;
-    private LinkedList<Order> orders;
+    private List<Order> orders;
+
 
     public Client(String email, String password, String name, String surname, long created) {
         super(email, password, name, surname, created);
         orders = new LinkedList<>();
         deposit = 0;
+    }
+
+    public Client(String email, String name, String surname, long created){
+        super(email, name, surname, created);
     }
 
     public double getDeposit() {
@@ -22,7 +28,7 @@ public class Client extends Person {
         this.deposit = deposit;
     }
 
-    public LinkedList<Order> getOrders() {
+    public List<Order> getOrders() {
         return orders;
     }
 

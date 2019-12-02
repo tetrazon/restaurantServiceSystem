@@ -1,17 +1,17 @@
 package service;
 
-import dao.db_controller.PgControllerWithConnPool;
-import people.Client;
+import dao.ClientDAO;
+import entity.people.Client;
 
 public class ApplicationService {
-    PgControllerWithConnPool pgControllerWithConnPool;
+    private ClientDAO clientDAO;
 
     public ApplicationService(){
-        pgControllerWithConnPool = new PgControllerWithConnPool();
+        clientDAO = new ClientDAO();
     }
 
     public String registerClient(Client client){
-        pgControllerWithConnPool.registerClient(client);
+        clientDAO.create(client);
         return client.getName();
     }
 }

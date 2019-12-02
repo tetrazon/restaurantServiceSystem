@@ -1,6 +1,6 @@
 package сontroller;
 
-import people.Client;
+import entity.people.Client;
 import service.ApplicationService;
 
 public class ApplicationController {

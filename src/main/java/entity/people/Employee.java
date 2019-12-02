@@ -1,4 +1,7 @@
-package people;
+package entity.people;
+
+import entity.enumeration.CurrentStatus;
+import entity.enumeration.Position;
 
 public class Employee extends Person {
     private Position position;

@@ -1,5 +1,7 @@
 package entity.food;
 
+import entity.enumeration.FoodCategory;
+
 public class Dish {
 
     private String name;

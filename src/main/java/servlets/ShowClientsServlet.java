@@ -1,6 +1,6 @@
 package servlets;
 
-import dao.db_controller.PgControllerWithConnPool;
+import dao.ClientDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,11 +12,11 @@ import java.io.IOException;
 @WebServlet({"/clients"})
 public class ShowClientsServlet extends HttpServlet {
 
-    @Override
+   /* @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        PgControllerWithConnPool pgControllerWithConnPool = new PgControllerWithConnPool();
-        pgControllerWithConnPool.getAllUsers();
-    }
+        ClientDAO clientDAO = new ClientDAO();
+        clientDAO.getAllUsers();
+    }*/
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

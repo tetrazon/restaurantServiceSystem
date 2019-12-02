@@ -1,6 +1,6 @@
 package servlets;
 
-import people.Client;
+import entity.people.Client;
 import сontroller.ApplicationController;
 
 import javax.servlet.ServletException;
@@ -14,7 +14,7 @@ import java.io.IOException;
 public class RegisterClientServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
         ApplicationController applicationController = new ApplicationController();
         Client client = new Client(req.getParameter("email"), req.getParameter("password"),
                 req.getParameter("name"), req.getParameter("surname"), System.currentTimeMillis());
