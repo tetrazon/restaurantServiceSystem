@@ -1,27 +1,25 @@
-package order;
+package entity.order;
 
-import food.DishesInOrder;
-import people.Waiter;
+import entity.food.DishesInOrder;
+import people.Employee;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Order {
 
-    private Timestamp timestamp;
+    private long timestamp;
     private Table table;
     private ArrayList<DishesInOrder> dishes;
     private float invoice;
     private OrderStatus orderStatus;
-    private Waiter waiterToService;
+    private Employee employeeToService;
 
     public Order() {
         invoice = 0;
         dishes = new ArrayList<>();
     }
     public void finishOrder(){
-        timestamp = new Timestamp(System.currentTimeMillis());
+        timestamp = (System.currentTimeMillis());
     }
 
     public void calculateResultSum(){

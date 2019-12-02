@@ -1,22 +1,21 @@
-package connectionPool;
+package dao.connectionPool;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class ConnectionPool {
+public class DataSource {
 
-    private static ConnectionPool instance = null;
+    private static DataSource instance = null;
 
-    private ConnectionPool(){
+    private DataSource(){
     }
 
-    public static ConnectionPool getInstance(){
+    public static DataSource getInstance(){
         if (instance==null)
-            instance = new ConnectionPool();
+            instance = new DataSource();
         return instance;
     }
 
@@ -25,7 +24,7 @@ public class ConnectionPool {
         Connection connection = null;
         try {
             ctx = new InitialContext();
-            DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/postgreSQLpool");
+            javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup("java:comp/env/jdbc/postgreSQLpool");
             connection = ds.getConnection();
         } catch (NamingException e) {
             e.printStackTrace();

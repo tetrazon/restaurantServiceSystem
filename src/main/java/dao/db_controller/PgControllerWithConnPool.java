@@ -1,6 +1,6 @@
-package сontroller.db_controller;
+package dao.db_controller;
 
-import connectionPool.ConnectionPool;
+import dao.connectionPool.DataSource;
 import people.Client;
 import сontroller.Controller;
 
@@ -14,16 +14,17 @@ public class PgControllerWithConnPool implements Controller {
 
     @Override
     public void registerClient(Client client) {
-        Connection connection = ConnectionPool.getInstance().getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement()){
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString("name"));
-            }
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("insert into clients (name, surname, email, password, created) "
+                     + "VALUES (?, ?, ?, ?, ?);")){
+            preparedStatement.setString(1, client.getName());
+            preparedStatement.setString(2, client.getSurname());
+            preparedStatement.setString(3, client.getEmail());
+            preparedStatement.setString(4, client.getPassword());
+            preparedStatement.setLong(5, client.getCreated());
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
     }
 
     @Override
@@ -37,15 +38,16 @@ public class PgControllerWithConnPool implements Controller {
     }
 
     public void getAllUsers(){
-       /* Connection connection = ConnectionPool.getInstance().getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT")){
+
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT name FROM clients;")){
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 System.out.println(resultSet.getString("name"));
             }
             } catch (SQLException ex) {
             ex.printStackTrace();
-        }*/
+        }
     }
 
     @Override

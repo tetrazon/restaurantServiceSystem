@@ -1,6 +1,6 @@
 package servlets;
 
-import сontroller.db_controller.PgControllerWithConnPool;
+import dao.db_controller.PgControllerWithConnPool;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

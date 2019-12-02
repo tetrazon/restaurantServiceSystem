@@ -1,9 +1,9 @@
-package food;
+package entity.food;
 
 public class Dish {
 
     private String name;
-    private float price;
+    private double price;
     private FoodCategory foodCategory;
     private String description;
 
@@ -15,7 +15,7 @@ public class Dish {
         this.foodCategory = foodCategory;
     }
 
-    public Dish(String name, float price) {
+    public Dish(String name, double price) {
         this.name = name;
         this.price = price;
     }
@@ -28,7 +28,7 @@ public class Dish {
         this.name = name;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return price;
     }
 

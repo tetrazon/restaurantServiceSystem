@@ -1,7 +1,7 @@
-package food;
+package entity.food;
 
 public class DishesInOrder {
-
+    private  int orderId;
     private Dish dish;
     int quantity;
 

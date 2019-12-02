@@ -1,4 +1,4 @@
-package order;
+package entity.order;
 
 public class Table {
     private int id;
