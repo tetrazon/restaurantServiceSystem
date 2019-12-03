@@ -11,11 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClientDAO{
+    private final String createClient = "insert into clients (name, surname, email, password, created)" +
+            " VALUES (?, ?, ?, ?, ?);";
+    private final String removeClient = "delete from clients where email = ?;";
+    private final String removeClientById = "delete from clients where id = ?;";
+    private final String getAllClients = "SELECT * FROM clients;";
 
     public void create(Client client) {
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("insert into clients (name, surname, email, password, created) "
-                     + "VALUES (?, ?, ?, ?, ?);")){
+             PreparedStatement preparedStatement = connection.prepareStatement(createClient)){
             preparedStatement.setString(1, client.getName());
             preparedStatement.setString(2, client.getSurname());
             preparedStatement.setString(3, client.getEmail());
@@ -29,7 +33,7 @@ public class ClientDAO{
 
     public void remove(Client client) {
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("delete from clients where email = ?;")){
+             PreparedStatement preparedStatement = connection.prepareStatement(removeClient)){
             preparedStatement.setString(1, client.getEmail());
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
@@ -39,7 +43,7 @@ public class ClientDAO{
 
     public void remove(int id) {//add ON DELETE CASCADE in tables?
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("delete from clients where id = ?;")){
+             PreparedStatement preparedStatement = connection.prepareStatement(removeClientById)){
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
@@ -50,7 +54,7 @@ public class ClientDAO{
     public List<Client> getAll(){
 
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM clients;")){
+             PreparedStatement preparedStatement = connection.prepareStatement(getAllClients)){
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Client> clients = new ArrayList<>();
             while (resultSet.next()) {

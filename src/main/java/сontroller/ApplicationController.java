@@ -1,16 +1,12 @@
 package сontroller;
 
-import entity.people.Client;
-import service.ApplicationService;
+import service.ClientService;
 
 public class ApplicationController {
-    private ApplicationService appService;
+    private ClientService appService;
 
     public ApplicationController() {
-        appService = new ApplicationService();
+        appService = new ClientService();
     }
 
-    public String registerClient(Client client){
-        return appService.registerClient(client);
-    }
 }

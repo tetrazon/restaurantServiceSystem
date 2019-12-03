@@ -13,6 +13,7 @@ public class Order {
     private float invoice;
     private OrderStatus orderStatus;
     private Employee waiterToService;
+    private Employee cookToService;
 
     public Order() {
         invoice = 0;
@@ -57,6 +58,14 @@ public class Order {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public Employee getCookToService() {
+        return cookToService;
+    }
+
+    public void setCookToService(Employee cookToService) {
+        this.cookToService = cookToService;
     }
 
     public Employee getWaiterToService() {
