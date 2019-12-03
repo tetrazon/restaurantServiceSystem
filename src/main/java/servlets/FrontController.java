@@ -1,8 +1,5 @@
 package servlets;
 
-import entity.people.Client;
-import сontroller.ApplicationController;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,7 +23,7 @@ public class FrontController extends HttpServlet {
             throws  javax.servlet.ServletException, java.io.IOException {
         switch (action){
             case "register":
-                action = "/register";
+                action = "/reg.jsp";
                 break;
             case "clients":
                 action = "/clients";

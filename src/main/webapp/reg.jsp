@@ -14,7 +14,8 @@
 </head>
 <body>
 <h3>New client</h3>
-<form method="post">
+
+<form method="post" action="/register">
     <label>Name</label><br>
     <input name="name"/><br><br>
     <label>Surname</label><br>
