@@ -4,12 +4,14 @@ import entity.food.DishesInOrder;
 import entity.people.Employee;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Order {
 
+    private int id;
     private long timestamp;
     private Table table;
-    private ArrayList<DishesInOrder> dishes;
+    private List<DishesInOrder> dishes;
     private float invoice;
     private OrderStatus orderStatus;
     private Employee waiterToService;
@@ -18,6 +20,18 @@ public class Order {
     public Order() {
         invoice = 0;
         dishes = new ArrayList<>();
+    }
+
+    public Order(int id, long timestamp, Table table, List<DishesInOrder> dishes,
+                 float invoice, OrderStatus orderStatus, Employee waiterToService, Employee cookToService ){
+        this.id = id;
+        this.timestamp = timestamp;
+        this.table = table;
+        this.dishes = dishes;
+        this.invoice = invoice;
+        this.orderStatus = orderStatus;
+        this.waiterToService = waiterToService;
+        this.cookToService = cookToService;
     }
 
     public long getTimestamp() {
@@ -36,7 +50,7 @@ public class Order {
         this.table = table;
     }
 
-    public ArrayList<DishesInOrder> getDishes() {
+    public List<DishesInOrder> getDishes() {
         return dishes;
     }
 

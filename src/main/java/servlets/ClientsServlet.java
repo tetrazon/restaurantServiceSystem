@@ -21,6 +21,8 @@ public class ClientsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("clients", clientService.getAll());
         req.getRequestDispatcher("clients.jsp").forward(req, resp);
+        String sessionId = req.getSession().getId();
+        System.out.println(sessionId);
     }
 
 }

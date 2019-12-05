@@ -2,6 +2,7 @@ package entity.people;
 
 public abstract class Person {
 
+    private int id;
     private String email;
     private String password;
     private String name;
@@ -9,6 +10,14 @@ public abstract class Person {
     private long created;
 
     public Person(String email, String name, String surname, long created){
+        this.email = email;
+        this.name = name;
+        this.surname = surname;
+        this.created = created;
+    }
+
+    public Person(int id, String email, String name, String surname, long created){
+        this.id = id;
         this.email = email;
         this.name = name;
         this.surname = surname;

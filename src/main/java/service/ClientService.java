@@ -12,9 +12,16 @@ public class ClientService {
         clientDAO = new ClientDAO();
     }
 
-public void add(String email, String password, String name, String surname){
-    Client client = new Client(email, password, name, surname, System.currentTimeMillis());
+public void add(Client client){
     clientDAO.create(client);
+}
+
+public String getPasswordByEmail(String email){
+        return clientDAO.getPasswordByEmail(email);
+}
+
+public void addSessionId(String email,String sessionId){
+        clientDAO.addSessionId(email, sessionId);
 }
 
 public List<Client> getAll(){

@@ -20,6 +20,10 @@ public class Client extends Person {
         super(email, name, surname, created);
     }
 
+    public Client(int id, String email, String name, String surname, long created){
+        super(id, email, name, surname, created);
+    }
+
     public double getDeposit() {
         return deposit;
     }

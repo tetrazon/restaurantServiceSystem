@@ -10,10 +10,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>add client</title>
+    <title>registration, singing in</title>
 </head>
 <body>
-<h3>New client</h3>
+<h3>New client? pls register</h3>
 
 <form method="post" action="/register">
     <label>Name</label><br>
@@ -23,7 +23,18 @@
     <label>email</label><br>
     <input name="email" /><br><br>
     <label>password</label><br>
-    <input name="password" /><br><br>
+    <input type="password" name="password" /><br><br>
+    <input type="submit" value="register" />
+</form>
+<br>
+<br>
+<h3>Already registered? log in:</h3>
+<form method="post" action="/login">
+
+    <label>email</label><br>
+    <input name="email" /><br><br>
+    <label>password</label><br>
+    <input type="password" name="password" /><br><br>
     <input type="submit" value="register" />
 </form>
 </body>
