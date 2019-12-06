@@ -1,6 +1,7 @@
 package servlets;
 
 import service.ClientService;
+import utils.FieldsValidation;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,16 +9,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @WebServlet({"/login"})
 public class LoginServlet extends HttpServlet {
-    private static ClientService clientService;
+    private static ClientService clientService = new ClientService();
+    private static Logger logger = Logger.getLogger(LoginServlet.class.getName());
 
-    static {
-        clientService = new ClientService();
-    }
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        logger.info("doGet method");
         req.getRequestDispatcher("reg.jsp").forward(req, resp);
     }
 
@@ -25,13 +26,18 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String clientEmail = req.getParameter("email");
         String passToCheck = req.getParameter("password");
-        String passFromDB = clientService.getPasswordByEmail(clientEmail);
-        if(passFromDB != null && passFromDB.equals(passToCheck)){
-            clientService.addSessionId(clientEmail, req.getSession().getId());
-            System.out.println("session added");
-            resp.sendRedirect(req.getContextPath()+"/create_order");
-        } else {
-            System.out.println("is not found");
+        if (FieldsValidation.validateEmail(clientEmail)){
+            String passFromDB = clientService.getPasswordByEmail(clientEmail);
+            if(passFromDB != null && passFromDB.equals(passToCheck)){
+                clientService.addSessionId(clientEmail, req.getSession().getId());
+                logger.info("session added");
+                resp.sendRedirect(req.getContextPath()+"/create_order");
+            }else {
+                logger.info("is not found");
+                resp.sendRedirect(req.getContextPath()+"/login");
+            }
+        }else {
+            logger.info("incorrect data");
             resp.sendRedirect(req.getContextPath()+"/login");
         }
     }

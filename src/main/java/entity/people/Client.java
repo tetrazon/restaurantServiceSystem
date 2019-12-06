@@ -9,7 +9,9 @@ public class Client extends Person {
     private double deposit;
     private List<Order> orders;
 
+    public Client(){
 
+    }
     public Client(String email, String password, String name, String surname, long created) {
         super(email, password, name, surname, created);
         orders = new LinkedList<>();

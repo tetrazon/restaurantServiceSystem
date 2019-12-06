@@ -12,11 +12,9 @@ import java.io.IOException;
 
 @WebServlet({"/register"})
 public class RegisterServlet extends HttpServlet {
-    private static ClientService clientService;
 
-    static {
-        clientService = new ClientService();
-    }
+    private static ClientService clientService = new ClientService();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
         req.getRequestDispatcher("reg.jsp").forward(req, resp);

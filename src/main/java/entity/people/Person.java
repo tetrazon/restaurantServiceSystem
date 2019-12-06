@@ -9,6 +9,10 @@ public abstract class Person {
     private String surname;
     private long created;
 
+    public Person(){
+
+    }
+
     public Person(String email, String name, String surname, long created){
         this.email = email;
         this.name = name;
@@ -30,6 +34,18 @@ public abstract class Person {
         this.name = name;
         this.surname = surname;
         this.created = created;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {
