@@ -9,7 +9,7 @@
     driverClassName="org.postgresql.Driver"
     url="jdbc:postgresql://localhost:5433/serviceDB?autoReconnect=true"
     validationQuery="select 1"
-              maxActive="10"
+              maxTotal="10"
     maxIdle="4"/>
 
 </Context>

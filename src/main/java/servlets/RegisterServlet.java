@@ -22,7 +22,7 @@ public class RegisterServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {//add validation!
         Client client = new Client(req.getParameter("email"), req.getParameter("password"),
                 req.getParameter("name"), req.getParameter("surname"), System.currentTimeMillis());
         clientService.add(client);

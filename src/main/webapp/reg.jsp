@@ -21,7 +21,7 @@
     <label>Surname</label><br>
     <input name="surname" /><br><br>
     <label>email</label><br>
-    <input name="email" /><br><br>
+    <input type="email" name="email" /><br><br>
     <label>password</label><br>
     <input type="password" name="password" /><br><br>
     <input type="submit" value="register" />
@@ -32,10 +32,10 @@
 <form method="post" action="/login">
 
     <label>email</label><br>
-    <input name="email" /><br><br>
+    <input type="email" name="email" /><br><br>
     <label>password</label><br>
     <input type="password" name="password" /><br><br>
-    <input type="submit" value="register" />
+    <input type="submit" value="log in" />
 </form>
 </body>
 </html>

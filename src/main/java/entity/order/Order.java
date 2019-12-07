@@ -1,5 +1,6 @@
 package entity.order;
 
+import entity.enumeration.OrderStatus;
 import entity.food.DishesInOrder;
 import entity.people.Employee;
 
@@ -32,6 +33,18 @@ public class Order {
         this.orderStatus = orderStatus;
         this.waiterToService = waiterToService;
         this.cookToService = cookToService;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setDishes(List<DishesInOrder> dishes) {
+        this.dishes = dishes;
     }
 
     public long getTimestamp() {
@@ -70,8 +83,8 @@ public class Order {
         return orderStatus;
     }
 
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
+    public void setOrderStatus(String  orderStatus) {
+        this.orderStatus = OrderStatus.valueOf(orderStatus);
     }
 
     public Employee getCookToService() {

@@ -19,7 +19,6 @@ public class ClientDAO{
     private final String removeClientById = "delete from clients where id = ?;";
     private final String getAllClients = "SELECT * FROM clients;";
     private final String passwordByEmail = "SELECT password FROM clients WHERE email = ?;";
-    private final String addSessionId = "INSERT INTO SESSIONS (session_id, client_email_fk) VALUES(?, ?);";
 
     public void create(Client client) {
         try (Connection connection = DataSource.getInstance().getConnection();
@@ -98,14 +97,4 @@ public class ClientDAO{
         return null;
     }
 
-    public void addSessionId(String email, String sessionId){
-        try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(addSessionId)){
-            preparedStatement.setString(1, sessionId);
-            preparedStatement.setString(2, email);
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
 }

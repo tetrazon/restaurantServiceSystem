@@ -20,10 +20,6 @@ public String getPasswordByEmail(String email){
         return clientDAO.getPasswordByEmail(email);
 }
 
-public void addSessionId(String email,String sessionId){
-        clientDAO.addSessionId(email, sessionId);
-}
-
 public List<Client> getAll(){
         return clientDAO.getAll();
 }

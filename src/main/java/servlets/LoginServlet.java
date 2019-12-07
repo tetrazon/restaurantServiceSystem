@@ -3,11 +3,13 @@ package servlets;
 import service.ClientService;
 import utils.FieldsValidation;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -29,8 +31,10 @@ public class LoginServlet extends HttpServlet {
         if (FieldsValidation.validateEmail(clientEmail)){
             String passFromDB = clientService.getPasswordByEmail(clientEmail);
             if(passFromDB != null && passFromDB.equals(passToCheck)){
-                clientService.addSessionId(clientEmail, req.getSession().getId());
-                logger.info("session added");
+                ServletContext servletContext = getServletContext();
+                servletContext.setAttribute("clientEmail", clientEmail);
+                logger.info("client added in app context" + req.getSession().getId() +
+                        "\n session.setAttribute(\"client\", clientEmail) = " + servletContext.getAttribute("clientEmail"));
                 resp.sendRedirect(req.getContextPath()+"/create_order");
             }else {
                 logger.info("is not found");
