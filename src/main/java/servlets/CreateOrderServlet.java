@@ -23,14 +23,15 @@ public class CreateOrderServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        logger.info("session" + req.getSession().getId() + "; req.getAttribute(\"clientEmail\") = " + req.getServletContext().getAttribute("client") );
-        if(req.getServletContext().getAttribute("clientEmail") == null){
+        logger.info("session" + req.getSession().getId() + "; req.getServletContext().getAttribute(req.getSession().getId()) = " + req.getServletContext().getAttribute(req.getSession().getId()) );
+        if(req.getServletContext().getAttribute(req.getSession().getId()) == null ||
+                req.getServletContext().getAttribute(req.getSession().getId())!= "client"){
             req.getRequestDispatcher("reg.jsp").forward(req, resp);
+        } else if(req.getServletContext().getAttribute(req.getSession().getId()).equals("client")){
+            logger.info("new order");
+            req.getRequestDispatcher("order.jsp").forward(req, resp);
         }
-        logger.info("new order");
-        //orderService.getAll(1);
-        //resp.sendRedirect("order.jsp");
-        req.getRequestDispatcher("order.jsp").forward(req, resp);
+
 
     }
 }

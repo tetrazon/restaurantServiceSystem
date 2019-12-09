@@ -32,9 +32,9 @@ public class LoginServlet extends HttpServlet {
             String passFromDB = clientService.getPasswordByEmail(clientEmail);
             if(passFromDB != null && passFromDB.equals(passToCheck)){
                 ServletContext servletContext = getServletContext();
-                servletContext.setAttribute("clientEmail", clientEmail);
+                servletContext.setAttribute(req.getSession().getId(), "client");
                 logger.info("client added in app context" + req.getSession().getId() +
-                        "\n session.setAttribute(\"client\", clientEmail) = " + servletContext.getAttribute("clientEmail"));
+                        "\n servletContext.getAttribute(\"client\", clientEmail) = " + servletContext.getAttribute("client"));
                 resp.sendRedirect(req.getContextPath()+"/create_order");
             }else {
                 logger.info("is not found");
@@ -48,6 +48,6 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //delete sessionId
+        //delete email from app context
     }
 }
