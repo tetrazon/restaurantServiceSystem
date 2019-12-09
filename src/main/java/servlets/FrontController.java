@@ -25,8 +25,8 @@ public class FrontController extends HttpServlet {
             case "register":
                 action = "/reg.jsp";
                 break;
-            case "clients":
-                action = "/clients";
+            case "about":
+                action = "/about.jsp";
                 break;
             default:
                 action = "/index.jsp";
