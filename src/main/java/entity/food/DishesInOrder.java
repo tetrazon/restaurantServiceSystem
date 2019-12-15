@@ -5,9 +5,19 @@ public class DishesInOrder {
     private Dish dish;
     int quantity;
 
+    public DishesInOrder(){}
+
     public DishesInOrder(Dish dish, int quantity) {
         this.dish = dish;
         this.quantity = quantity;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
     }
 
     public Dish getDish() {
@@ -22,7 +32,7 @@ public class DishesInOrder {
         this.quantity = quantity;
     }
 
-    private void setDish(Dish dish) {
+    public void setDish(Dish dish) {
         this.dish = dish;
     }
 }

@@ -2,6 +2,8 @@ package dao;
 
 import dao.dataSourse.DataSource;
 import entity.people.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,16 +11,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class ClientDAO{
-    private static Logger logger = Logger.getLogger(ClientDAO.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(ClientDAO.class);
     private final String createClient = "insert into clients (name, surname, email, password, created)" +
             " VALUES (?, ?, ?, ?, ?);";
     private final String removeClient = "delete from clients where email = ?;";
     private final String removeClientById = "delete from clients where id = ?;";
     private final String getAllClients = "SELECT * FROM clients;";
     private final String passwordByEmail = "SELECT password FROM clients WHERE email = ?;";
+    private final String iDByEmail = "SELECT id FROM clients WHERE email = ?;";
+    private final String CHECK_DEPOSIT = "select deposit from clients where id = ?";
+    private final String UPDATE_DEPOSIT = "update clients set deposit = ?  where id = ?";
 
     public void create(Client client) {
         try (Connection connection = DataSource.getInstance().getConnection();
@@ -87,7 +91,7 @@ public class ClientDAO{
                 result = resultSet.getString("password");
             }
             if(result == null){
-                logger.info("no such user!");
+                logger.error("no such user!");
                 return null;
             }
             return result;
@@ -95,6 +99,58 @@ public class ClientDAO{
             ex.printStackTrace();
         }
         return null;
+    }
+
+    public Integer getIdByEmail(String emailToCheck){
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(iDByEmail)){
+            preparedStatement.setString(1, emailToCheck);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Integer result = null;
+            while (resultSet.next()) {
+                result = resultSet.getInt("id");
+            }
+            if(result == null){
+                logger.error("no such user!");
+                return null;
+            }
+            return result;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public Double getClientDeposit(int clientId){
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(CHECK_DEPOSIT)){
+            preparedStatement.setInt(1, clientId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Double deposit = null;
+            while (resultSet.next()) {
+                deposit = resultSet.getDouble("deposit");
+            }
+            if(deposit == null){
+                logger.error("no such user!");
+                return null;
+            }
+            return deposit;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateClientDeposit(int clientId, double newDeposit){
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_DEPOSIT)){
+            preparedStatement.setDouble(1, newDeposit);
+            preparedStatement.setInt(2, clientId);
+            preparedStatement.executeUpdate();
+            logger.info("client with id: "+ clientId + ", deposit is updated: " + newDeposit + "$");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
 }

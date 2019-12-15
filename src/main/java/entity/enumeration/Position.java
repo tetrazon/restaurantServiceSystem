@@ -1,5 +1,5 @@
 package entity.enumeration;
 
 public enum Position {
-    WAITER, COOK, MANAGER
+    WAITER, COOK, MANAGER;
 }

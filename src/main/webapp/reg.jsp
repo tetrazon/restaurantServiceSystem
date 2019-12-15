@@ -37,5 +37,11 @@
     <input type="password" name="password" /><br><br>
     <input type="submit" value="log in" />
 </form>
+
+<%--<%! String errorMsg = "login or password is incorrect"; %>--%>
+<% if(request.getParameter("loginError")!= null && request.getParameter("loginError").equals("y")){ %>
+<a>login or password is incorrect</a>
+<% } %>
+
 </body>
 </html>

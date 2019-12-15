@@ -6,17 +6,14 @@ import utils.FieldsValidation;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.logging.Logger;
 
 @WebServlet({"/login"})
 public class LoginServlet extends HttpServlet {
-    private static ClientService clientService = new ClientService();
-    private static Logger logger = Logger.getLogger(LoginServlet.class.getName());
+    private ClientService clientService = new ClientService();
+    private Logger logger = Logger.getLogger(LoginServlet.class.getName());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -32,13 +29,15 @@ public class LoginServlet extends HttpServlet {
             String passFromDB = clientService.getPasswordByEmail(clientEmail);
             if(passFromDB != null && passFromDB.equals(passToCheck)){
                 ServletContext servletContext = getServletContext();
-                servletContext.setAttribute(req.getSession().getId(), "client");
-                logger.info("client added in app context" + req.getSession().getId() +
-                        "\n servletContext.getAttribute(\"client\", clientEmail) = " + servletContext.getAttribute("client"));
+                servletContext.setAttribute("client", req.getSession().getId());
+                Integer clientId = clientService.getIdByEmail(clientEmail);
+                HttpSession session = req.getSession();
+                session.setAttribute("clientId", clientId);
+                logger.info("client added in app context, client clientId is: " + clientId);
                 resp.sendRedirect(req.getContextPath()+"/create_order");
             }else {
                 logger.info("is not found");
-                resp.sendRedirect(req.getContextPath()+"/login");
+                resp.sendRedirect(req.getContextPath()+"/login?loginError=y");
             }
         }else {
             logger.info("incorrect data");

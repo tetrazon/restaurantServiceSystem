@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter({"/clients", "/create_order", "/managing"})
+@WebFilter({ "/managing", "/manager_login",
+        })//"/welcome_new.jsp", "/order.jsp", "/clients.jsp", "/managing.jsp""/clients",
 public class FilterRequest implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -17,7 +18,7 @@ public class FilterRequest implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         if (servletRequest instanceof HttpServletRequest) {
             String url = ((HttpServletRequest)servletRequest).getRequestURL().toString();
-            if(url.contains("index.jsp") ){
+            if(url.contains("index.jsp")){
                 filterChain.doFilter(servletRequest,servletResponse);
             } else{
                 HttpServletResponse resp = (HttpServletResponse) servletResponse;

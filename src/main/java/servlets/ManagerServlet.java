@@ -8,21 +8,21 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@WebServlet("/managing")
+@WebServlet("/manager_login")
 public class ManagerServlet extends HttpServlet {
-    private static Logger logger = Logger.getLogger(LoginServlet.class.getName());
+    private Logger logger = Logger.getLogger(LoginServlet.class.getName());
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if(req.getServletContext().getAttribute(req.getSession().getId()) == null ||
                 req.getServletContext().getAttribute(req.getSession().getId())!= "manager"){
-            req.getRequestDispatcher("manager.jsp").forward(req, resp);
+            req.getRequestDispatcher("manager_login.jsp").forward(req, resp);
         } else if(req.getServletContext().getAttribute(req.getSession().getId()).equals("manager")){
             logger.info("manager");
-            //req.getRequestDispatcher("/managing_clients").forward(req, resp);
+            req.getRequestDispatcher("/managing").forward(req, resp);
         }
     }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-       //go to login manager page
+        req.getRequestDispatcher("manager_login.jsp").forward(req, resp);
     }
 }

@@ -13,6 +13,10 @@ public class Table {
         this.isReserved = isReserved;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }

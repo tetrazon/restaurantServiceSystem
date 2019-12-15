@@ -11,11 +11,7 @@ import java.io.IOException;
 
 @WebServlet({"/clients"})
 public class ClientsServlet extends HttpServlet {
-    private static ClientService clientService;
-
-    static {
-        clientService = new ClientService();
-    }
+    private ClientService clientService = new ClientService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

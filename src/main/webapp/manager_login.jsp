@@ -11,8 +11,8 @@
     <title>managing</title>
 </head>
 <body>
-h3>manager log in:</h3>
-<form method="post" action="/managing">
+<h3>manager log in:</h3>
+<form method="post" action="/manager_login">
 
     <label>email</label><br>
     <input type="email" name="email" /><br><br>

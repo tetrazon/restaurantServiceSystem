@@ -10,10 +10,11 @@ import java.util.List;
 public class Order {
 
     private int id;
+    private int clientId;
     private long timestamp;
     private Table table;
     private List<DishesInOrder> dishes;
-    private float invoice;
+    private double invoice;
     private OrderStatus orderStatus;
     private Employee waiterToService;
     private Employee cookToService;
@@ -33,6 +34,14 @@ public class Order {
         this.orderStatus = orderStatus;
         this.waiterToService = waiterToService;
         this.cookToService = cookToService;
+    }
+
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 
     public int getId() {
@@ -71,16 +80,16 @@ public class Order {
         this.dishes = dishes;
     }
 
-    public float getInvoice() {
+    public double getInvoice() {
         return invoice;
     }
 
-    public void setInvoice(float invoice) {
+    public void setInvoice(double invoice) {
         this.invoice = invoice;
     }
 
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
+    public String getOrderStatus() {
+        return orderStatus.toString();
     }
 
     public void setOrderStatus(String  orderStatus) {
@@ -107,11 +116,13 @@ public class Order {
         timestamp = (System.currentTimeMillis());
     }
 
-    public void calculateResultSum(){
+    public static double calculateResultSum(List<DishesInOrder> dishes){
+        float sum = 0;
         for (DishesInOrder dishesInOrder : dishes
              ) {
-            invoice += dishesInOrder.getQuantity() * dishesInOrder.getDish().getPrice();
+            sum += dishesInOrder.getQuantity() * dishesInOrder.getDish().getPrice();
         }
+        return sum;
     }
 }
 

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
     <!-- Specify a JDBC datasource -->
-    <Resource name="jdbc/postgreSQLpool"
-    auth="Container"
-    type="javax.sql.DataSource"
-    username="postgres"
-    password="root"
-    driverClassName="org.postgresql.Driver"
-    url="jdbc:postgresql://localhost:5433/serviceDB?autoReconnect=true"
-    validationQuery="select 1"
+    <Resource name ="jdbc/postgreSQLpool"
+              auth ="Container"
+              type ="javax.sql.DataSource"
+              username="postgres"
+              password ="root"
+              driverClassName ="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5433/serviceDB?autoReconnect=true"
+              validationQuery="select 1"
               maxTotal="10"
-    maxIdle="4"/>
+              maxIdle="4"/>
 
 </Context>

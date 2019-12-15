@@ -13,7 +13,7 @@ import java.io.IOException;
 @WebServlet({"/register"})
 public class RegisterServlet extends HttpServlet {
 
-    private static ClientService clientService = new ClientService();
+    private ClientService clientService = new ClientService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
@@ -26,7 +26,8 @@ public class RegisterServlet extends HttpServlet {
         Client client = new Client(req.getParameter("email"), req.getParameter("password"),
                 req.getParameter("name"), req.getParameter("surname"), System.currentTimeMillis());
         clientService.add(client);
-        resp.sendRedirect(req.getContextPath()+"/clients");
+        //req.setAttribute("name",req.getParameter("name"));
+        resp.sendRedirect("/welcome_new?name=" + req.getParameter("name"));
 
     }
 }
