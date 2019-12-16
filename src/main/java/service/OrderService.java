@@ -11,6 +11,7 @@ import entity.people.Employee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class OrderService {
@@ -50,8 +51,25 @@ public class OrderService {
         orderDAO.createOrder(order);
     }
 
-    public void addDishesInOrder(DishesInOrder dishesInOrder){
+    public void addItemDishesInOrder(DishesInOrder dishesInOrder){
         orderDAO.insertDishesInOrder(dishesInOrder);
+    }
+
+    public void addDishesInOrderItems(int orderId, int[] dishesId, int [] dishQuantities){
+        List<Dish> dishes = new LinkedList<>();
+        for (int i = 0; i < dishesId.length; i++) {
+            Dish tempDish = getDish(dishesId[i]);
+            dishes.add(tempDish);
+        }
+        //List<DishesInOrder> dishesInOrder = new LinkedList<>();
+        for (int i = 0; i < dishesId.length; i++) {
+            DishesInOrder tempDishesInOrder = new DishesInOrder();
+            tempDishesInOrder.setQuantity(dishQuantities[i]);
+            tempDishesInOrder.setDish(dishes.get(i));
+            tempDishesInOrder.setOrderId(orderId);
+            addItemDishesInOrder(tempDishesInOrder);
+            //dishesInOrder.add(tempDishesInOrder);
+        }
     }
 
     public void changeOrderStatus(int orderId, String status){
@@ -135,5 +153,52 @@ public class OrderService {
         return invoice;
     }
 
+    public String processOrder(int clientId, int orderId, int tableId,
+                               double invoice, int[] dishesId, int [] dishQuantities){
+        String response = "";
+       // Order order = new Order();
+        Employee waiter = callEmployee("WAITER");
+        Employee cook = callEmployee("COOK");
+        if(cook != null && waiter != null){
+            addEmployeesInOrder(waiter.getId(),cook.getId(), orderId);
+            try {
+                changeOrderStatus(orderId, "IS_PROCESSING");
+                waiter.processOrder();
+                cook.processOrder();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //clientService.updateDeposit(clientId, newClientDeposit); !!! write it in servlet
+            finishingOrder(waiter,cook, orderId, tableId);
+            addDishesInOrderItems(orderId, dishesId, dishQuantities);
+            return "IS_FINISHED";
+            /*order.setId(orderId);
+            order.setClientId(clientId);
+            order.setInvoice(invoice);
+            order.setWaiterToService(waiter);
+            order.setOrderStatus("IS_FINISHED");
+            order.setCookToService(cook);*/
+        } else if(cook == null && waiter!= null){
+            // add waiter in order, form order, set order status cook_queue, and info need wait COOK, add listeners to catch COOK
+        } else if(waiter == null && cook != null){
+            // add cook in order, form order, set order status waiter, and info need wait waiter, add listeners to catch waiter
+        } else {
+            //set set order status ALL_queue
+            //  and info need wait WAITER, COOK, add listeners to catch WAITER, COOK
+        }
+        return "ERROR";
+    }
+
+    public void finishingOrder(Employee waiter, Employee cook, int orderId, int tableId){
+        changeLoadFactor(waiter.getId(), -1);
+        changeLoadFactor(cook.getId(), -1);
+        changeOrderStatus(orderId, "IS_FINISHED");
+        setTableStatus(false, tableId);
+        setTimeOfOrder(orderId);
+    }
+
+    public List<DishesInOrder> getDishesFromOrder(int orderId){
+        return orderDAO.getDishesFromOrder(orderId);
+    }
 
 }

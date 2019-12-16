@@ -1,6 +1,7 @@
 package dao;
 
 import dao.dataSourse.DataSource;
+import entity.food.Dish;
 import entity.food.DishesInOrder;
 import entity.order.Order;
 import entity.order.Table;
@@ -31,6 +32,8 @@ public class OrderDAO {//check statements!
     private final String CHANGE_ORDER_STATUS = "update orders set order_status = ? where id = ?";
     private final String SET_ORDER_TIME = "update orders set date_of_order = ? where orders.id = ?";
     private final String INSERT_DISHES_IN_ORDER = "insert into dishes_in_order (dish_id_fk, order_id_fk, quantity) VALUES (?,?,?)";
+    private final String GET_ALL_DISHES_IN_ORDER = "select dishes.name, dishes.price, dishes_in_order.quantity from dishes_in_order " +
+            "join dishes ON dishes.id = dishes_in_order.dish_id_fk WHERE dishes_in_order.order_id_fk = ?;";
 
 public void insertDishesInOrder(DishesInOrder dishesInOrder){
     try (Connection connection = DataSource.getInstance().getConnection();
@@ -249,6 +252,32 @@ public void insertDishesInOrder(DishesInOrder dishesInOrder){
             logger.error("some connection DB error");
             ex.printStackTrace();
         }
+    }
+
+    public List<DishesInOrder> getDishesFromOrder(int orderId){
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_DISHES_IN_ORDER)){
+            preparedStatement.setInt(1, orderId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<DishesInOrder> dishesInOrder = new ArrayList<>();
+            while (resultSet.next()) {
+                Dish tempDish = new Dish();
+                DishesInOrder tempDishesInOrder = new DishesInOrder();
+                tempDish.setName(resultSet.getString("name"));
+                tempDish.setPrice(resultSet.getDouble("price"));
+                tempDishesInOrder.setQuantity(resultSet.getInt("quantity"));
+                tempDishesInOrder.setDish(tempDish);
+                logger.info("dish name: " + tempDish.getName());
+                logger.info("dish $: " + tempDish.getPrice());
+                logger.info("quantity: " + tempDishesInOrder.getQuantity());
+                dishesInOrder.add(tempDishesInOrder);
+            }
+            return dishesInOrder;
+        } catch (SQLException ex) {
+            logger.error("statement is not performed");
+            ex.printStackTrace();
+        }
+        return null;
     }
 
 }
