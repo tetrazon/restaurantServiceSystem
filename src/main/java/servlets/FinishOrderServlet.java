@@ -19,7 +19,7 @@ import java.util.List;
 
 @WebServlet("/finish_order")
 public class FinishOrderServlet extends HttpServlet {
-    private static Logger logger = LoggerFactory.getLogger(FinishOrderServlet.class);
+    private Logger logger = LoggerFactory.getLogger(FinishOrderServlet.class);
     private OrderService orderService = new OrderService();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -9,10 +9,7 @@ import java.util.List;
 
 public class ClientService {
     private static Logger logger = LoggerFactory.getLogger(ClientService.class);
-    private ClientDAO clientDAO;
-    public ClientService(){
-        clientDAO = new ClientDAO();
-    }
+    private static ClientDAO clientDAO = new ClientDAO();
 
 public void add(Client client){
     clientDAO.create(client);
@@ -41,6 +38,10 @@ public List<Client> getAll(){
 
     public void updateDeposit(int clientId, double newDeposit){
         clientDAO.updateClientDeposit(clientId, newDeposit);
+    }
+
+    public void deleteClient(int id){
+    clientDAO.deleteClient(id);
     }
 
 }

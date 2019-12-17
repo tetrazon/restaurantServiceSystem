@@ -20,7 +20,6 @@
     <input type="password" name="password" /><br><br>
     <input type="submit" value="log in" />
 </form>
-<%--client deposit--%>
-<%--manage employee--%>
+<button onclick="location.href='/index.jsp'">home page</button><br /><br>
 </body>
 </html>

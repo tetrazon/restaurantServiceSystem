@@ -12,17 +12,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class EmployeeDAO {
-
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(EmployeeDAO.class);
     private final  String INSERT_EMPLOYEE = "insert into employees (email, password, name, surname, created, load_factor, position) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?);";
     private final String GET_ALL_AVAIL_EMPL = "SELECT * FROM employees where employees.position = ? and load_factor < 5;";
     private final String GET_ORDER_BY_ID = "SELECT * FROM orders WHERE id = ?;";
     private final String SET_LOAD = "update employees set load_factor = ((select load_factor from employees where id = ?) + ?) where id = ?";
-
+    private final String PASS_BY_EMAIL = "SELECT password FROM employees WHERE email = ?;";
+    private final String ID_BY_EMAIL = "SELECT id FROM employees WHERE email = ?;";
 
     public void create(Employee employee){
         try (Connection connection = DataSource.getInstance().getConnection();
@@ -84,5 +83,44 @@ public class EmployeeDAO {
         return null;
     }
 
+    public String getPasswordByEmail(String emailToCheck){
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(PASS_BY_EMAIL)){
+            preparedStatement.setString(1, emailToCheck);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            String result = null;
+            while (resultSet.next()) {
+                result = resultSet.getString("password");
+            }
+            if(result == null){
+                logger.error("no such user!");
+                return null;
+            }
+            return result;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public Integer getIdByEmail(String emailToCheck){
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(ID_BY_EMAIL)){
+            preparedStatement.setString(1, emailToCheck);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Integer result = null;
+            while (resultSet.next()) {
+                result = resultSet.getInt("id");
+            }
+            if(result == null){
+                logger.error("no such user!");
+                return null;
+            }
+            return result;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
 
 }

@@ -15,7 +15,7 @@ import java.util.List;
 
 @WebServlet({"/create_order"})
 public class CreateOrderServlet extends HttpServlet {
-    private static Logger logger = LoggerFactory.getLogger(CreateOrderServlet.class);
+    private Logger logger = LoggerFactory.getLogger(CreateOrderServlet.class);
     private OrderService orderService = new OrderService();
     private ClientService clientService = new ClientService();
 

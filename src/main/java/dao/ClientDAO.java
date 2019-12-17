@@ -48,7 +48,7 @@ public class ClientDAO{
         }
     }
 
-    public void remove(int id) {//add ON DELETE CASCADE in tables?
+    public void deleteClient(int id) {//add ON DELETE CASCADE in tables?
         try (Connection connection = DataSource.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(removeClientById)){
             preparedStatement.setInt(1, id);
@@ -71,7 +71,8 @@ public class ClientDAO{
                 tempClient.setName(resultSet.getString("name"));
                 tempClient.setSurname(resultSet.getString("surname"));
                 tempClient.setCreated(resultSet.getLong("created"));
-                logger.info("extract Client, id = " + tempClient.getId());
+                tempClient.setDeposit(resultSet.getDouble("deposit"));
+                logger.info("extract Client, id = " + tempClient.getId() + "; deposit$: " + tempClient.getDeposit());
                 clients.add(tempClient);
             }
             return clients;
