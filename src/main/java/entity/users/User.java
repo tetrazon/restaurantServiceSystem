@@ -1,6 +1,6 @@
-package entity.people;
+package entity.users;
 
-public abstract class Person {
+public abstract class User {
 
     private int id;
     private String email;
@@ -9,18 +9,18 @@ public abstract class Person {
     private String surname;
     private long created;
 
-    public Person(){
+    public User(){
 
     }
 
-    public Person(String email, String name, String surname, long created){
+    public User(String email, String name, String surname, long created){
         this.email = email;
         this.name = name;
         this.surname = surname;
         this.created = created;
     }
 
-    public Person(int id, String email, String name, String surname, long created){
+    public User(int id, String email, String name, String surname, long created){
         this.id = id;
         this.email = email;
         this.name = name;
@@ -28,7 +28,7 @@ public abstract class Person {
         this.created = created;
     }
 
-    public Person(String email, String password, String name, String surname, long created) {
+    public User(String email, String password, String name, String surname, long created) {
         this.email = email;
         this.password = password;
         this.name = name;

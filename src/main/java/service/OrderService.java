@@ -7,7 +7,7 @@ import entity.food.Dish;
 import entity.food.DishesInOrder;
 import entity.order.Order;
 import entity.order.Table;
-import entity.people.Employee;
+import entity.users.Employee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

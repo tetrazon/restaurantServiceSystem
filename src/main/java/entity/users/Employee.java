@@ -1,9 +1,8 @@
-package entity.people;
+package entity.users;
 
-import entity.enumeration.CurrentStatus;
 import entity.enumeration.Position;
 
-public class Employee extends Person {
+public class Employee extends User {
     private Position position;
     private int loadFactor; //0-5, 5 means busy
 
@@ -23,7 +22,8 @@ public class Employee extends Person {
     }
 
     public void setPosition(String position) {
-        this.position = Position.valueOf("WAITER");
+        System.out.println(position);
+        this.position = Position.valueOf(position.toUpperCase());
     }
 
     public int getLoadFactor() {

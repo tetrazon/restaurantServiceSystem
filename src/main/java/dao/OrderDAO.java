@@ -54,8 +54,8 @@ public void insertDishesInOrder(DishesInOrder dishesInOrder){
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ORDER)){
             preparedStatement.setInt(1, order.getClientId());
             preparedStatement.setString(2, order.getOrderStatus());
-            preparedStatement.setInt(3, order.getWaiterToService().getId());
-            preparedStatement.setInt(4, order.getCookToService().getId());
+            preparedStatement.setInt(3, order.getWaiter().getId());
+            preparedStatement.setInt(4, order.getCook().getId());
             preparedStatement.setInt(5, order.getTable().getId());
             preparedStatement.setDouble(6, order.getInvoice());
             preparedStatement.setLong(7, order.getTimestamp());

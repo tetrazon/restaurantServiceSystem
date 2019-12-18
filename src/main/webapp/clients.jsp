@@ -14,9 +14,9 @@
 </head>
 <body>
 registered clients:
-<c:forEach var="client" items="${requestScope.clients}">
+<c:forEach var="employee" items="${requestScope.clients}">
 
-    <tr>${client.name}</tr>
+    <tr>${employee.name}</tr>
 </c:forEach>
 </body>
 </html>

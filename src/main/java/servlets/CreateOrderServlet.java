@@ -35,6 +35,7 @@ public class CreateOrderServlet extends HttpServlet {
         int[] dishesId = orderService.stringToIntArray(req.getParameterValues("dishId"));
         //check sum
         double invoice = orderService.calculateSumOfOrder(dishQuantities, dishPrices);
+        session.setAttribute("invoice", invoice);
         double newClientDeposit = clientService.checkDeposit(clientId, invoice);
         if(newClientDeposit < 0 ){
             //not enough money,cancel order

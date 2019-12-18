@@ -14,11 +14,11 @@
     <title>Title</title>
 </head>
 <body>
-enjoy your meal!
+<p>enjoy your meal!</p>
 
-
+<p>your order:</p>
 <table>
-    ordered items:
+
         <tr><th>Name</th><th>price</th><th>quantity</th></tr>
         <c:forEach var="item" items="${dishesInOrderList}">
         <tr><td>${item.dish.name}</td>
@@ -28,6 +28,8 @@ enjoy your meal!
         </tr>
         </c:forEach>
 </table>
-
+<p> total sum: ${invoice} $</p>
+<button onclick="location.href='/create_order'">make new order</button><br /><br>
+<%@ include file="/WEB-INF/logout.html" %>
 </body>
 </html>

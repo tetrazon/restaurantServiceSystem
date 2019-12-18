@@ -1,7 +1,7 @@
 package dao;
 
 import dao.dataSourse.DataSource;
-import entity.people.Employee;
+import entity.users.Employee;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
@@ -15,31 +15,66 @@ import java.util.List;
 
 public class EmployeeDAO {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(EmployeeDAO.class);
-    private final  String INSERT_EMPLOYEE = "insert into employees (email, password, name, surname, created, load_factor, position) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?);";
+    private final  String INSERT_EMPLOYEE = "insert into employees (email, password, name, surname, created, position) "
+            + "VALUES (?, ?, ?, ?, ?, ?);";
     private final String GET_ALL_AVAIL_EMPL = "SELECT * FROM employees where employees.position = ? and load_factor < 5;";
-    private final String GET_ORDER_BY_ID = "SELECT * FROM orders WHERE id = ?;";
     private final String SET_LOAD = "update employees set load_factor = ((select load_factor from employees where id = ?) + ?) where id = ?";
     private final String PASS_BY_EMAIL = "SELECT password FROM employees WHERE email = ?;";
     private final String ID_BY_EMAIL = "SELECT id FROM employees WHERE email = ?;";
+    private final String DELETE_EMPLOYEE_BY_ID = "delete from employees where id = ?";
+    private final String GET_ALL_EMPLOYEES = "select * from employees where position != 'MANAGER';";
+
+    public List<Employee> getAllEmployees(){
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_EMPLOYEES)){
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Employee> employees = new ArrayList<>();
+            while (resultSet.next()){
+                Employee tempEmployee = new Employee();
+                tempEmployee.setName(resultSet.getString("name"));
+                tempEmployee.setId(resultSet.getInt("id"));
+                tempEmployee.setEmail(resultSet.getString("email"));
+                tempEmployee.setPosition(resultSet.getString("position"));
+                logger.info("extracted empl position: " + tempEmployee.getPosition());
+                employees.add(tempEmployee);
+            }
+            return employees;
+        } catch (SQLException ex) {
+            logger.error("connection error");
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public void deleteEmployeeById(int employeeId){
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_EMPLOYEE_BY_ID)){
+            preparedStatement.setInt(1, employeeId);
+            preparedStatement.executeUpdate();
+            logger.info("employee with id " + employeeId + " is deleted");
+        } catch (SQLException ex) {
+            logger.error("connection error");
+            ex.printStackTrace();
+        }
+    }
 
     public void create(Employee employee){
         try (Connection connection = DataSource.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_EMPLOYEE)){
+            logger.info("position of inserting empl: " + employee.getPosition());
             preparedStatement.setString(1, employee.getEmail());
             preparedStatement.setString(2, employee.getPassword());
             preparedStatement.setString(3, employee.getName());
             preparedStatement.setString(4, employee.getSurname());
-            preparedStatement.setLong(5, employee.getCreated());
-            preparedStatement.setInt(6, employee.getLoadFactor());
-            preparedStatement.setString(7, employee.getPosition());
+            preparedStatement.setLong(5, System.currentTimeMillis());
+            preparedStatement.setString(6, employee.getPosition());
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
-    public boolean changeLoadFactor (int load, int epmloyeeId){
+    public boolean changeLoadFactor (int load, int employeeId){
         if (load > 1 || load <-1)
         {
             logger.error("wrong load");
@@ -48,11 +83,11 @@ public class EmployeeDAO {
 
         try (Connection connection = DataSource.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SET_LOAD)){
-            preparedStatement.setInt(1, epmloyeeId);
+            preparedStatement.setInt(1, employeeId);
             preparedStatement.setInt(2, load);
-            preparedStatement.setInt(3, epmloyeeId);
+            preparedStatement.setInt(3, employeeId);
             preparedStatement.executeUpdate();
-            logger.info("employee load factor has bee changed, id:" + epmloyeeId + ", load: " + load);
+            logger.info("employee load factor has bee changed, id:" + employeeId + ", load: " + load);
             return true;
         } catch (SQLException ex) {
             ex.printStackTrace();

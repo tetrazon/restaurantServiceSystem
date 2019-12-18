@@ -48,9 +48,6 @@
 <% if(request.getParameter("error")!= null && request.getParameter("error").equals("money")){ %>
 <a>sorry, you have not enough money.Try to order <%=request.getParameter("need")%>$ less</a>
 <% }%>
-
-
-
 <%if(request.getParameter("error")!= null && request.getParameter("error").equals("table")){%>
 <a>It seems you have not chosen table or at that moment all tables are reserved. </a>
 <a>Try to reserve available table or wait some time and make order again </a>
@@ -58,6 +55,6 @@
 <%if(request.getParameter("error")!= null && request.getParameter("error").equals("order")){%>
 <a>sorry, some db error has been occurred. try make order again</a>
 <% }%>
-
+<%@ include file="/WEB-INF/logout.html" %>
 </body>
 </html>

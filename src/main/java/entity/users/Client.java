@@ -1,10 +1,10 @@
-package entity.people;
+package entity.users;
 
 import entity.order.Order;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Client extends Person {
+public class Client extends User {
 
     private double deposit;
     private List<Order> orders;

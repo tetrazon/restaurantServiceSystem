@@ -1,6 +1,6 @@
 package servlets;
 
-import entity.people.Client;
+import entity.users.Client;
 import service.ClientService;
 
 import javax.servlet.ServletException;

@@ -17,13 +17,13 @@
 
 <form method="post" action="/register">
     <label>Name</label><br>
-    <input name="name"/><br><br>
+    <input required="" name="name"/><br><br>
     <label>Surname</label><br>
-    <input name="surname" /><br><br>
+    <input required="" name="surname" /><br><br>
     <label>email</label><br>
-    <input type="email" name="email" /><br><br>
+    <input required="" type="email" name="email" /><br><br>
     <label>password</label><br>
-    <input type="password" name="password" /><br><br>
+    <input required="" type="password" name="password" /><br><br>
     <input type="submit" value="register" />
 </form>
 <br>
@@ -32,9 +32,9 @@
 <form method="post" action="/login">
 
     <label>email</label><br>
-    <input type="email" name="email" /><br><br>
+    <input required="" type="email" name="email" /><br><br>
     <label>password</label><br>
-    <input type="password" name="password" /><br><br>
+    <input required="" type="password" name="password" /><br><br>
     <input type="submit" value="log in" />
 </form>
 

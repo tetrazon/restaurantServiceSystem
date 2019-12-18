@@ -15,9 +15,9 @@
 <form method="post" action="/manager_login">
 
     <label>email</label><br>
-    <input type="email" name="email" /><br><br>
+    <input required="" type="email" name="email" /><br><br>
     <label>password</label><br>
-    <input type="password" name="password" /><br><br>
+    <input required="" type="password" name="password" /><br><br>
     <input type="submit" value="log in" />
 </form>
 <button onclick="location.href='/index.jsp'">home page</button><br /><br>

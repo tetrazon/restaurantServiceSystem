@@ -1,7 +1,7 @@
 package service;
 
 import dao.ClientDAO;
-import entity.people.Client;
+import entity.users.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

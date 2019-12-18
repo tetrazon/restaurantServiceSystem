@@ -2,7 +2,7 @@ package entity.order;
 
 import entity.enumeration.OrderStatus;
 import entity.food.DishesInOrder;
-import entity.people.Employee;
+import entity.users.Employee;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +16,8 @@ public class Order {
     private List<DishesInOrder> dishes;
     private double invoice;
     private OrderStatus orderStatus;
-    private Employee waiterToService;
-    private Employee cookToService;
+    private Employee waiter;
+    private Employee cook;
 
     public Order() {
         invoice = 0;
@@ -25,15 +25,15 @@ public class Order {
     }
 
     public Order(int id, long timestamp, Table table, List<DishesInOrder> dishes,
-                 float invoice, OrderStatus orderStatus, Employee waiterToService, Employee cookToService ){
+                 float invoice, OrderStatus orderStatus, Employee waiter, Employee cookToService ){
         this.id = id;
         this.timestamp = timestamp;
         this.table = table;
         this.dishes = dishes;
         this.invoice = invoice;
         this.orderStatus = orderStatus;
-        this.waiterToService = waiterToService;
-        this.cookToService = cookToService;
+        this.waiter = waiter;
+        this.cook = cookToService;
     }
 
     public int getClientId() {
@@ -96,20 +96,20 @@ public class Order {
         this.orderStatus = OrderStatus.valueOf(orderStatus);
     }
 
-    public Employee getCookToService() {
-        return cookToService;
+    public Employee getCook() {
+        return cook;
     }
 
-    public void setCookToService(Employee cookToService) {
-        this.cookToService = cookToService;
+    public void setCook(Employee cook) {
+        this.cook = cook;
     }
 
-    public Employee getWaiterToService() {
-        return waiterToService;
+    public Employee getWaiter() {
+        return waiter;
     }
 
-    public void setWaiterToService(Employee waiterToService) {
-        this.waiterToService = waiterToService;
+    public void setWaiter(Employee waiter) {
+        this.waiter = waiter;
     }
 
     public void finishOrder(){
