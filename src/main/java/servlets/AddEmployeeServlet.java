@@ -19,7 +19,6 @@ public class AddEmployeeServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         logger.info("emp name: " + request.getParameter("name"));
-
         Employee employee = new Employee();
         employee.setName(request.getParameter("name"));
         employee.setSurname(request.getParameter("surname"));

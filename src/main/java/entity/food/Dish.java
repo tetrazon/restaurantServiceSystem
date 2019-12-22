@@ -41,7 +41,7 @@ public class Dish {
     }
 
     public void setFoodCategory(String foodCategory) {
-        this.foodCategory = FoodCategory.valueOf(foodCategory);
+        this.foodCategory = FoodCategory.valueOf(foodCategory.toUpperCase());
     }
 
     public String getName() {

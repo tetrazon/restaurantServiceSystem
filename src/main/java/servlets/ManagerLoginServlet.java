@@ -31,7 +31,7 @@ public class ManagerLoginServlet extends HttpServlet {
                 HttpSession session = req.getSession();
                 session.setAttribute("emplId", emplId);
                 logger.info("empl added in app context, empl id is: " + emplId);
-                resp.sendRedirect(req.getContextPath()+"/managing");
+                resp.sendRedirect("/manage_options.jsp");
             }else {
                 logger.info("is not found");
                 resp.sendRedirect(req.getContextPath()+"/manager_login.jsp");

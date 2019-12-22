@@ -10,24 +10,52 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class DishDAO {
 
     private static Logger logger = LoggerFactory.getLogger(Dish.class);
     private final String GET_ALL_DISHES = "SELECT * FROM dishes;";
-    private final String GET_DISH = "SELECT * FROM dishes where id = ?;";
+    private final String GET_DISH_BY_ID = "SELECT * FROM dishes where id = ?;";
     private final  String INSERT_ORDER = "insert into dishes (name, price, description, food_category) VALUES (?,?,?,?);";
+    private final String  UPDATE_DISH_BY_ID = "update dishes set price = ?, description = ? where id = ?";
+    private final String DELETE_DISH_BY_ID = "delete from dishes where id = ?";
 
+    public void deleteDishById(int dishId){
+        try (Connection connection = DataSource.getInstance().getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(DELETE_DISH_BY_ID)){
+            preparedStatement.setInt(1, dishId);
+            preparedStatement.executeUpdate();
+            logger.info("dish with id: "+ dishId + " is deleted");
+        } catch (SQLException ex) {
+            logger.error("dish is not deleted, something goes wrong");
+            ex.printStackTrace();
+        }
+    }
 
+    public void updateDishById(int dishId, double newPrice, String newDescription){
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_DISH_BY_ID)){
+            preparedStatement.setDouble(1, newPrice);
+            preparedStatement.setString(2, newDescription);
+            preparedStatement.setInt(3, dishId);
+            preparedStatement.executeUpdate();
+            logger.info("dish with id: "+ dishId + " is updated, new price: " + newPrice + "$");
+        } catch (SQLException ex) {
+            logger.error("dish is not edited, something goes wrong");
+            ex.printStackTrace();
+        }
+    }
 
-    public void create(Dish order){
+    public void create(Dish dish){
         try (Connection connection = DataSource.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ORDER)){
-            preparedStatement.setString(1, order.getName());
-            preparedStatement.setDouble(2, order.getPrice());
-            preparedStatement.setString(3, order.getDescription());
-            preparedStatement.setString(4, order.getFoodCategory());
+            preparedStatement.setString(1, dish.getName());
+            preparedStatement.setDouble(2, dish.getPrice());
+            preparedStatement.setString(3, dish.getDescription());
+            preparedStatement.setString(4, dish.getFoodCategory());
             preparedStatement.executeUpdate();
             logger.info("dish is added");
         } catch (SQLException ex) {
@@ -41,7 +69,7 @@ public class DishDAO {
         try (Connection connection = DataSource.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_DISHES)){
             ResultSet resultSet = preparedStatement.executeQuery();
-            List<Dish> orders = new ArrayList<>();
+            List<Dish> dishes = new ArrayList<>();
             while (resultSet.next()) {
                 Dish tempDish = new Dish();
                 tempDish.setId(resultSet.getInt("id"));
@@ -51,9 +79,10 @@ public class DishDAO {
                 tempDish.setFoodCategory(resultSet.getString("food_category"));
                 logger.info("dish id: " + tempDish.getId());
                 logger.info("dish cat: " + tempDish.getFoodCategory());
-                orders.add(tempDish);
+                dishes.add(tempDish);
             }
-            return orders;
+            Collections.sort(dishes, Comparator.comparing(Dish::getId));
+            return dishes;
         } catch (SQLException ex) {
             logger.error("statement is not performed");
             ex.printStackTrace();
@@ -61,10 +90,10 @@ public class DishDAO {
         return null;
     }
 
-    public Dish getDish(int dishId){
+    public Dish getDishById(int dishId){
 
         try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(GET_DISH)){
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_DISH_BY_ID)){
             preparedStatement.setInt(1, dishId);
             ResultSet resultSet = preparedStatement.executeQuery();
             Dish dish = new Dish();

@@ -31,6 +31,10 @@ public class CreateOrderServlet extends HttpServlet {
         }
         Integer tableId = Integer.valueOf(stringTableId);
         int[] dishQuantities = orderService.stringToIntArray(req.getParameterValues("quantity"));
+        if (dishQuantities == null){
+            resp.sendRedirect("/create_order");
+            return;
+        }
         double[] dishPrices = orderService.stringToDoubleArray(req.getParameterValues("dishPrice"));
         int[] dishesId = orderService.stringToIntArray(req.getParameterValues("dishId"));
         //check sum
@@ -84,19 +88,13 @@ public class CreateOrderServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        Integer clientId = (Integer) session.getAttribute("clientId");
-        logger.info("session" + req.getSession().getId() + "; req.getServletContext().getAttribute(\"clientId\") = " + clientId );
-        if(clientId == null ){
-            req.getRequestDispatcher("reg.jsp").forward(req, resp);
-        } else {
-            logger.info("new order");
-            List<Dish> dishes = orderService.getAllDishes();
-            List<Table> tables = orderService.getAllTables();// change table status if time after finishing order is more than 10 min
-            session.setAttribute("dishes", dishes);
-            session.setAttribute("tables", tables);
-            req.getRequestDispatcher("order.jsp").forward(req, resp);
-        }
+        HttpSession session = req.getSession(true);
+        logger.info("new order");
+        List<Dish> dishes = orderService.getAllDishes();
+        List<Table> tables = orderService.getAllTables();// change table status if time after finishing order is more than 10 min
+        session.setAttribute("dishes", dishes);
+        session.setAttribute("tables", tables);
+        req.getRequestDispatcher("order.jsp").forward(req, resp);
 
 
     }

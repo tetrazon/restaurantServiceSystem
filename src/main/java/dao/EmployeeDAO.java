@@ -22,11 +22,12 @@ public class EmployeeDAO {
     private final String PASS_BY_EMAIL = "SELECT password FROM employees WHERE email = ?;";
     private final String ID_BY_EMAIL = "SELECT id FROM employees WHERE email = ?;";
     private final String DELETE_EMPLOYEE_BY_ID = "delete from employees where id = ?";
-    private final String GET_ALL_EMPLOYEES = "select * from employees where position != 'MANAGER';";
+    private final String GET_ALL_EMPLOYEES = "select * from employees where id!= ?;";
 
-    public List<Employee> getAllEmployees(){
+    public List<Employee> getAllEmployees(int emplId){
         try (Connection connection = DataSource.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_EMPLOYEES)){
+            preparedStatement.setInt(1, emplId);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Employee> employees = new ArrayList<>();
             while (resultSet.next()){
@@ -38,6 +39,7 @@ public class EmployeeDAO {
                 logger.info("extracted empl position: " + tempEmployee.getPosition());
                 employees.add(tempEmployee);
             }
+            Collections.sort(employees, Comparator.comparing(Employee::getId));
             return employees;
         } catch (SQLException ex) {
             logger.error("connection error");
@@ -58,10 +60,12 @@ public class EmployeeDAO {
         }
     }
 
-    public void create(Employee employee){
+    public void create(Employee employee){ //(email, password, name, surname, created, position)
         try (Connection connection = DataSource.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_EMPLOYEE)){
-            logger.info("position of inserting empl: " + employee.getPosition());
+            logger.info("position of inserting empl: " + employee.getPosition()+ "\n"
+             + " mail: " + employee.getEmail()+ " pass: " + employee.getPassword() + " name " + employee.getName() +
+                    " surn " + employee.getSurname());
             preparedStatement.setString(1, employee.getEmail());
             preparedStatement.setString(2, employee.getPassword());
             preparedStatement.setString(3, employee.getName());

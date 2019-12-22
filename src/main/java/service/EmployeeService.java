@@ -21,8 +21,8 @@ public class EmployeeService {
         employeeDAO.deleteEmployeeById(employeeId);
     }
 
-    public List<Employee> getAllEmployees(){
-        return employeeDAO.getAllEmployees();
+    public List<Employee> getAllEmployees(int id){
+        return employeeDAO.getAllEmployees( id);
     }
 
     public void create(Employee employee){

@@ -27,7 +27,7 @@ public class FinishOrderServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession(true);
         Integer orderId = (Integer) session.getAttribute("orderId");
         if(orderId == null ){
             logger.info("unauthorised order");

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 @WebServlet({"/home"})
-public class FrontController extends HttpServlet {
+public class FrontServlet extends HttpServlet {
 
     private Logger logger = Logger.getLogger(LoginServlet.class.getName());
     @Override

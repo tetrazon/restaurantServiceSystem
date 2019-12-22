@@ -11,6 +11,9 @@
     <title>about</title>
 </head>
 <body>
+restaurant service 2019
+your advertisement could be here
+to more information, pls contact manager: +37529 123 45 67
 <button onclick="location.href='/index.jsp'">home</button><br />
 </body>
 </html>

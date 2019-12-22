@@ -10,13 +10,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ClientDAO{
     private static Logger logger = LoggerFactory.getLogger(ClientDAO.class);
     private final String createClient = "insert into clients (name, surname, email, password, created)" +
             " VALUES (?, ?, ?, ?, ?);";
-    private final String removeClient = "delete from clients where email = ?;";
     private final String removeClientById = "delete from clients where id = ?;";
     private final String getAllClients = "SELECT * FROM clients;";
     private final String passwordByEmail = "SELECT password FROM clients WHERE email = ?;";
@@ -38,17 +39,7 @@ public class ClientDAO{
         }
     }
 
-    public void remove(Client client) {
-        try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(removeClient)){
-            preparedStatement.setString(1, client.getEmail());
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void deleteClient(int id) {//add ON DELETE CASCADE in tables?
+    public void deleteClientById(int id) {
         try (Connection connection = DataSource.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(removeClientById)){
             preparedStatement.setInt(1, id);
@@ -75,6 +66,7 @@ public class ClientDAO{
                 logger.info("extract Client, id = " + tempClient.getId() + "; deposit$: " + tempClient.getDeposit());
                 clients.add(tempClient);
             }
+            Collections.sort(clients, Comparator.comparing(Client::getId));
             return clients;
             } catch (SQLException ex) {
             ex.printStackTrace();

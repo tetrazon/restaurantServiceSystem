@@ -21,7 +21,7 @@ public class OrderService {
     private static DishDAO dishDAO = new DishDAO();
     private static EmployeeDAO employeeDAO = new EmployeeDAO();
 
-    public void create(Order order){
+    public void createOrder(Order order){
 
     }
 
@@ -33,8 +33,8 @@ public class OrderService {
         return dishDAO.getAllDishes();
     }
 
-    public Dish getDish(int dishId){
-        return dishDAO.getDish(dishId);
+    public Dish getDishById(int dishId){
+        return dishDAO.getDishById(dishId);
     }
 
     public List<Table> getAllTables(){
@@ -58,11 +58,14 @@ public class OrderService {
     public void addDishesInOrderItems(int orderId, int[] dishesId, int [] dishQuantities){
         List<Dish> dishes = new LinkedList<>();
         for (int i = 0; i < dishesId.length; i++) {
-            Dish tempDish = getDish(dishesId[i]);
+            Dish tempDish = getDishById(dishesId[i]);
             dishes.add(tempDish);
         }
         //List<DishesInOrder> dishesInOrder = new LinkedList<>();
         for (int i = 0; i < dishesId.length; i++) {
+            if(dishQuantities[i] == 0){// ignore empty fields
+                continue;
+            }
             DishesInOrder tempDishesInOrder = new DishesInOrder();
             tempDishesInOrder.setQuantity(dishQuantities[i]);
             tempDishesInOrder.setDish(dishes.get(i));
@@ -130,9 +133,18 @@ public class OrderService {
 
      synchronized public int[] stringToIntArray(String[] strings){
         int [] ints = new int[strings.length];
+        int emptyCount= 0;
         for (int i = 0; i < ints.length; i++) {
+            if(strings[i] == null || strings[i].equals("") ){
+                ints[i] = 0;
+                emptyCount ++;
+                continue;
+            }
             ints[i] = Integer.parseInt(strings[i]);
             logger.info("iteration: " + i + "; int[i]=" + ints[i]);
+        }
+        if(emptyCount == strings.length){
+            return null;
         }
         return ints;
     }
@@ -199,6 +211,18 @@ public class OrderService {
 
     public List<DishesInOrder> getDishesFromOrder(int orderId){
         return orderDAO.getDishesFromOrder(orderId);
+    }
+
+    public void updateDishById(int dishId, double newPrice, String newDescription){
+        dishDAO.updateDishById(dishId, newPrice, newDescription);
+    }
+
+    public void deleteDishById(int dishId){
+        dishDAO.deleteDishById(dishId);
+    }
+
+    public void addDish(Dish dish){
+        dishDAO.create(dish);
     }
 
 }

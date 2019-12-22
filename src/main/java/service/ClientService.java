@@ -41,7 +41,7 @@ public List<Client> getAll(){
     }
 
     public void deleteClient(int id){
-    clientDAO.deleteClient(id);
+    clientDAO.deleteClientById(id);
     }
 
 }

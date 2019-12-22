@@ -44,9 +44,4 @@ public class LoginServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath()+"/login");
         }
     }
-
-    @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //delete email from app context
-    }
 }

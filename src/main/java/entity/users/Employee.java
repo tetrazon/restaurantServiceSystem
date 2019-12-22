@@ -22,7 +22,6 @@ public class Employee extends User {
     }
 
     public void setPosition(String position) {
-        System.out.println(position);
         this.position = Position.valueOf(position.toUpperCase());
     }
 

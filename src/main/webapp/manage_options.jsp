@@ -13,5 +13,6 @@
 <body>
 <button onclick="location.href='/clients_managing'">clients managing</button><br /><br>
 <button onclick="location.href='/employees_managing'">employees managing</button><br /><br>
+<button onclick="location.href='/menu'">edit menu</button><br /><br>
 </body>
 </html>
