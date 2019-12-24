@@ -61,7 +61,6 @@ public class OrderService {
             Dish tempDish = getDishById(dishesId[i]);
             dishes.add(tempDish);
         }
-        //List<DishesInOrder> dishesInOrder = new LinkedList<>();
         for (int i = 0; i < dishesId.length; i++) {
             if(dishQuantities[i] == 0){// ignore empty fields
                 continue;
@@ -71,7 +70,6 @@ public class OrderService {
             tempDishesInOrder.setDish(dishes.get(i));
             tempDishesInOrder.setOrderId(orderId);
             addItemDishesInOrder(tempDishesInOrder);
-            //dishesInOrder.add(tempDishesInOrder);
         }
     }
 
@@ -165,6 +163,14 @@ public class OrderService {
         return invoice;
     }
 
+    public double calculateSumOfOrder(List<DishesInOrder> dishesInOrderList){
+        double sum = 0;
+        for (int i = 0; i < dishesInOrderList.size(); i++) {
+            sum += dishesInOrderList.get(i).getQuantity()*dishesInOrderList.get(i).getDish().getPrice();
+        }
+        return sum;
+    }
+
     public String processOrder(int clientId, int orderId, int tableId,
                                double invoice, int[] dishesId, int [] dishQuantities){
         String response = "";
@@ -180,16 +186,9 @@ public class OrderService {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            //clientService.updateDeposit(clientId, newClientDeposit); !!! write it in servlet
             finishingOrder(waiter,cook, orderId, tableId);
             addDishesInOrderItems(orderId, dishesId, dishQuantities);
             return "IS_FINISHED";
-            /*order.setId(orderId);
-            order.setClientId(clientId);
-            order.setInvoice(invoice);
-            order.setWaiterToService(waiter);
-            order.setOrderStatus("IS_FINISHED");
-            order.setCookToService(cook);*/
         } else if(cook == null && waiter!= null){
             // add waiter in order, form order, set order status cook_queue, and info need wait COOK, add listeners to catch COOK
         } else if(waiter == null && cook != null){
@@ -224,5 +223,7 @@ public class OrderService {
     public void addDish(Dish dish){
         dishDAO.create(dish);
     }
+
+
 
 }

@@ -20,17 +20,17 @@
 <table>
     <form method="post" action='<c:url value="/create_order" />' >
     <tr><th>Name</th><th>desc</th><th>cat</th><th>price $</th><th></th></tr>
-    <c:forEach var="dish" items="${dishes}">
+    <c:forEach var="order" items="${dishes}">
 
-        <tr><td>${dish.name}</td>
-            <td>${dish.description}</td>
-            <td>${dish.foodCategory}</td>
-            <td>${dish.price}</td>
+        <tr><td>${order.name}</td>
+            <td>${order.description}</td>
+            <td>${order.foodCategory}</td>
+            <td>${order.price}</td>
             <td>
                 <label>quantity</label><br>
                 <input name="quantity"  type="number" min="1" max="10"/><br>
-                <input type="hidden" name="dishId" value="${dish.id}">
-                <input type="hidden" name="dishPrice" value="${dish.price}">
+                <input type="hidden" name="dishId" value="${order.id}">
+                <input type="hidden" name="dishPrice" value="${order.price}">
             </td>
             <td>
             </td></tr>
@@ -45,6 +45,8 @@
 </c:forEach>
 <input type="submit" value="create order">
 </form>
+<p></p>
+<button onclick="location.href='/order_history'">order history</button><br /><br>
 <% if(request.getParameter("error")!= null && request.getParameter("error").equals("money")){ %>
 <a>sorry, you have not enough money.Try to order <%=request.getParameter("need")%>$ less</a>
 <% }%>

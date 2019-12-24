@@ -13,6 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class OrderDAO {//check statements!
@@ -44,7 +46,7 @@ public void insertDishesInOrder(DishesInOrder dishesInOrder){
         preparedStatement.executeUpdate();
         logger.info("dishes in order is added");
     } catch (SQLException ex) {
-        logger.info("dishes inorder are not added, db connection goes wrong");
+        logger.info("dishes in order are not added, db connection goes wrong");
         ex.printStackTrace();
     }
 }
@@ -172,11 +174,10 @@ public void insertDishesInOrder(DishesInOrder dishesInOrder){
                 tempOrder.setInvoice(resultSet.getDouble("invoice"));
                 tempOrder.setOrderStatus(resultSet.getString("order_status"));
                 logger.info("order id: " + tempOrder.getId());
-                // extracting Table table, List<DishesInOrder> dishes, Employee waiterToService, Employee cookToService
-                // use JOIN
-
                 orders.add(tempOrder);
             }
+            Collections.sort(orders, (Order o1, Order o2) ->
+                    o2.getTimestamp() - o1.getTimestamp()>0? 1:o2.getTimestamp() - o1.getTimestamp() == 0? 0:-1);
             return orders;
         } catch (SQLException ex) {
             ex.printStackTrace();

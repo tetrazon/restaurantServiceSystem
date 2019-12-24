@@ -14,7 +14,6 @@
     <title>Title</title>
 </head>
 <body>
-<p>enjoy your meal!</p>
 
 <p>your order:</p>
 <table>
@@ -30,6 +29,7 @@
 </table>
 <p> total sum: ${invoice} $</p>
 <button onclick="location.href='/create_order'">make new order</button><br /><br>
+<button onclick="location.href='/order_history'">order history</button><br /><br>
 <%@ include file="/WEB-INF/logout.html" %>
 </body>
 </html>

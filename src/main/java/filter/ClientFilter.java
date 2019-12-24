@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebFilter({"/create_order", "/order.jsp", "/finish_order", "/finish_order.jsp"})
+@WebFilter({"/create_order", "/order.jsp", "/finish_order", "/finish_order.jsp", "/order_details", "/order_history.jsp"})
 public class ClientFilter implements Filter {
     private static Logger logger = LoggerFactory.getLogger(ClientFilter.class);
     @Override
