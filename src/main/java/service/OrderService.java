@@ -11,6 +11,8 @@ import entity.users.Employee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,10 +22,6 @@ public class OrderService {
     private static OrderDAO orderDAO = new OrderDAO();
     private static DishDAO dishDAO = new DishDAO();
     private static EmployeeDAO employeeDAO = new EmployeeDAO();
-
-    public void createOrder(Order order){
-
-    }
 
     public List<Order> getAllClients(int clientId){
        return orderDAO.getAllOrders(clientId);
@@ -39,12 +37,6 @@ public class OrderService {
 
     public List<Table> getAllTables(){
         return orderDAO.getAllTables();
-    }
-
-
-    public void addEmployeeInOrder(int orderId, int employeeId){
-
-        //orderDAO.addEmployeesInOrder(freeWaiter.getId(),freeWaiter.getId(), orderId);
     }
 
     public void addOrder(Order order){
@@ -160,7 +152,7 @@ public class OrderService {
         for (int i = 0; i < quantity.length; i++) {
             invoice += quantity[i]*dishPrices[i];
         }
-        return invoice;
+        return roundDouble(invoice, 2);
     }
 
     public double calculateSumOfOrder(List<DishesInOrder> dishesInOrderList){
@@ -168,7 +160,11 @@ public class OrderService {
         for (int i = 0; i < dishesInOrderList.size(); i++) {
             sum += dishesInOrderList.get(i).getQuantity()*dishesInOrderList.get(i).getDish().getPrice();
         }
-        return sum;
+        return roundDouble(sum, 2);
+    }
+
+    private double roundDouble(double doubleToRound, int scale){
+        return new BigDecimal(doubleToRound).setScale(scale, RoundingMode.UP).doubleValue();
     }
 
     public String processOrder(int clientId, int orderId, int tableId,

@@ -20,7 +20,7 @@
     <input type="radio" name="foodCategory" value="DESSERT">DESSERT<Br>
     <input type="submit" value="add menu item" />
 </form>
-<button onclick="location.href='/managing'">go to manage options</button><br /><br>
+<button onclick="location.href='/manage_options.jsp'">go to manage options</button><br /><br>
 <%@ include file="/WEB-INF/logout.html" %>
 
 </body>

@@ -27,7 +27,7 @@
     <input type="radio" name="position" value="MANAGER"> manager<Br>
     <input type="submit" value="add employee" />
 </form>
-<button onclick="location.href='/managing'">go to manage options</button><br /><br>
+<button onclick="location.href='/manage_options.jsp'">go to manage options</button><br /><br>
 <%@ include file="/WEB-INF/logout.html" %>
 
 </body>

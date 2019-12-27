@@ -37,7 +37,7 @@
     </c:forEach>
 </table>
 <button onclick="location.href='/add_menu_item.jsp'">add new menu item</button><br /><br>
-<button onclick="location.href='/managing'">go to manage options</button><br /><br>
+<button onclick="location.href='/manage_options.jsp'">go to manage options</button><br /><br>
 <%@ include file="/WEB-INF/logout.html" %>
 </body>
 </html>
