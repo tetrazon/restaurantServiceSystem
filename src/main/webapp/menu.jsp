@@ -10,24 +10,24 @@
 <p></p>
 <table>
     <tr><th>food name </th><th>price$</th><th> description </th> <th>food category</th><th>new price & description            </th><th></th><th></th></tr>
-    <c:forEach var="order" items="${dishes}">
+    <c:forEach var="dish" items="${dishes}">
 
         <tr>
-            <td>${order.name}</td>
-            <td>${order.price}</td>
-            <td>${order.description}</td>
-            <td>${order.foodCategory}</td>
+            <td>${dish.name}</td>
+            <td>${dish.price}</td>
+            <td>${dish.description}</td>
+            <td>${dish.foodCategory}</td>
             <td>
                 <form method="post" action='<c:url value="/menu" />'style="display:inline;">
                     <input required="" name="newPrice" type="number" step="0.01" min="0.1" max="1000" />
                     <input required="" name="newDescription" />
-                    <input type="hidden" name="dishId" value="${order.id}">
+                    <input type="hidden" name="dishId" value="${dish.id}">
                     <input type="submit" value="change price & descr">
                 </form>
             </td>
             <td>
                 <form method="post" action='<c:url value="/menu" />' style="display:inline;">
-                    <input type="hidden" name="dishId" value="${order.id}">
+                    <input type="hidden" name="dishId" value="${dish.id}">
                     <input type="hidden" name="delete" value="y">
                     <input type="submit" value="delete item">
                 </form>

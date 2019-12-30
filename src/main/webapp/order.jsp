@@ -20,17 +20,17 @@
 <table>
     <form method="post" action='<c:url value="/create_order" />' >
     <tr><th>Name</th><th>desc</th><th>cat</th><th>price $</th><th></th></tr>
-    <c:forEach var="order" items="${dishes}">
+    <c:forEach var="dish" items="${dishes}">
 
-        <tr><td>${order.name}</td>
-            <td>${order.description}</td>
-            <td>${order.foodCategory}</td>
-            <td>${order.price}</td>
+        <tr><td>${dish.name}</td>
+            <td>${dish.description}</td>
+            <td>${dish.foodCategory}</td>
+            <td>${dish.price}</td>
             <td>
                 <label>quantity</label><br>
                 <input name="quantity"  type="number" min="1" max="10"/><br>
-                <input type="hidden" name="dishId" value="${order.id}">
-                <input type="hidden" name="dishPrice" value="${order.price}">
+                <input type="hidden" name="dishId" value="${dish.id}">
+                <input type="hidden" name="dishPrice" value="${dish.price}">
             </td>
             <td>
             </td></tr>
