@@ -22,6 +22,7 @@
                     <input required="" name="newPrice" type="number" step="0.01" min="0.1" max="1000" />
                     <input required="" name="newDescription" />
                     <input type="hidden" name="dishId" value="${dish.id}">
+<%--                    dish instead or order!!--%>
                     <input type="submit" value="change price & descr">
                 </form>
             </td>
