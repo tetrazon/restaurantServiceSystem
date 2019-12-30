@@ -164,7 +164,8 @@ public class OrderService {
     }
 
     private double roundDouble(double doubleToRound, int scale){
-        return new BigDecimal(doubleToRound).setScale(scale, RoundingMode.UP).doubleValue();
+        if (scale < 0) throw new IllegalArgumentException();
+        return new BigDecimal(doubleToRound).setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 
     public String processOrder(int clientId, int orderId, int tableId,
