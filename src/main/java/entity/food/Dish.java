@@ -2,12 +2,29 @@ package entity.food;
 
 import entity.enumeration.FoodCategory;
 
-public class Dish {
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
+
+@Entity
+//@Embeddable
+@Table(name = "dishes")
+public class Dish  implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "price")
     private double price;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "food_category")
     private FoodCategory foodCategory;
+    @Column(name = "description")
     private String description;
+
+    @OneToMany(mappedBy = "dish")
+    private List<DishesInOrder> dishesInOrders;
 
     public Dish(){}
 

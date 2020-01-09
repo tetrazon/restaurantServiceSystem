@@ -2,6 +2,7 @@ package servlets;
 
 import entity.food.Dish;
 import entity.order.Table;
+import entity.users.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.ClientService;
@@ -39,8 +40,10 @@ public class CreateOrderServlet extends HttpServlet {
         int[] dishesId = orderService.stringToIntArray(req.getParameterValues("dishId"));
         //check sum
         double invoice = orderService.calculateSumOfOrder(dishQuantities, dishPrices);
+        logger.info("invoice: " + invoice);
         session.setAttribute("invoice", invoice);
-        double newClientDeposit = clientService.checkDeposit(clientId, invoice);
+        Client client = clientService.getClientById(clientId);
+        double newClientDeposit = clientService.checkDeposit(client, invoice);
         if(newClientDeposit < 0 ){
             //not enough money,cancel order
             logger.info("not enough money: "+ -newClientDeposit);
@@ -49,17 +52,17 @@ public class CreateOrderServlet extends HttpServlet {
         }
         //2 reserve table, init order;
         orderService.setTableStatus(true, tableId);
-        if(!orderService.initOrder(clientId,tableId, invoice)){
+        if(!orderService.initOrder(client,tableId, invoice)){
             orderService.setTableStatus(false, tableId);
             resp.sendRedirect("/create_order?error=order");
             return;
         }
-        int orderId = orderService.getOrderId(clientId, "NEW");
-        String orderResult = orderService.processOrder(clientId, orderId, tableId, invoice, dishesId, dishQuantities);
+        int orderId = orderService.getOrderId(client, "NEW");
+        String orderResult = orderService.processOrder(orderId, tableId, invoice, dishesId, dishQuantities);
         switch (orderResult){
             //    NEW, IS_PROCESSING, IS_FINISHED, COOK_QUEUE, WAITER_QUEUE, ALL_QUEUE;
             case "IS_FINISHED":
-                clientService.updateDeposit(clientId, newClientDeposit);
+                clientService.updateDeposit(client, newClientDeposit);
                 session.setAttribute("orderId", orderId);
                 //, set into context, redirect to finish page
                 resp.sendRedirect("/finish_order");

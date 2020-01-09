@@ -2,11 +2,21 @@ package entity.users;
 
 import entity.enumeration.Position;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "employees")
 public class Employee extends User {
+    @Enumerated(EnumType.STRING)
+    @Column(name = "position")
+    //@JoinColumn(name = "position")
     private Position position;
+    @Column(name = "load_factor")
     private int loadFactor; //0-5, 5 means busy
 
-    public Employee(){}
+    public Employee(){
+        super();
+    }
 
     public Employee(String position){
        setPosition(position);

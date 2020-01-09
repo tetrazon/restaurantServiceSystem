@@ -1,19 +1,26 @@
 package service;
 
 import dao.EmployeeDAO;
+import dao.hibernate.EmployeeDAOHibernate;
+import dao.jdbc.EmployeeDAOJdbc;
 import entity.users.Employee;
 
 import java.util.List;
 
 public class EmployeeService {
-    private static EmployeeDAO employeeDAO = new EmployeeDAO();
+    private static EmployeeDAO employeeDAO = new EmployeeDAOHibernate();
 
     public String getPasswordByEmail(String emailToCheck){
-       return employeeDAO.getPasswordByEmail(emailToCheck);
+
+       Employee employee = employeeDAO.getEmployeeByEmail(emailToCheck);
+       if(employee == null){
+           return null;
+       }
+       return employee.getPassword();
     }
 
     public Integer getIdByEmail(String emailToCheck){
-        return employeeDAO.getIdByEmail(emailToCheck);
+        return employeeDAO.getEmployeeByEmail(emailToCheck).getId();
     }
 
     public void deleteEmployeeById(int employeeId){

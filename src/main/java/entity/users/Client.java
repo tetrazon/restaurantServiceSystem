@@ -1,25 +1,36 @@
 package entity.users;
 
 import entity.order.Order;
+
+import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
-
+@Entity
+@Table(name = "clients")
 public class Client extends User {
-
+    @Column(name = "deposit")
     private double deposit;
+    @OneToMany(mappedBy = "client", fetch=FetchType.LAZY)
     private List<Order> orders;
 
     public Client(){
-
+        super();
     }
+
+    public Client(int id){
+        super(id);
+    }
+
     public Client(String email, String password, String name, String surname, long created) {
         super(email, password, name, surname, created);
         orders = new LinkedList<>();
-        deposit = 0;
+        deposit = 100.;
     }
 
     public Client(String email, String name, String surname, long created){
+
         super(email, name, surname, created);
+        deposit = 100.;
     }
 
     public Client(int id, String email, String name, String surname, long created){

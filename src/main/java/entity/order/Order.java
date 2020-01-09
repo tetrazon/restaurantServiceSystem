@@ -2,30 +2,68 @@ package entity.order;
 
 import entity.enumeration.OrderStatus;
 import entity.food.DishesInOrder;
+import entity.users.Client;
 import entity.users.Employee;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Order {
+@Entity
+//@Embeddable
+@javax.persistence.Table(name = "orders")
+public class Order implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column (name = "id")
     private int id;
-    private int clientId;
-    private long timestamp;
+    @Column(name = "date_of_order")
+    private Long timestamp;
+    @ManyToOne
+    @JoinColumn(name = "ordered_table_fk")
     private Table table;
+    @OneToMany(mappedBy = "order", fetch=FetchType.LAZY)
     private List<DishesInOrder> dishes;
-    private double invoice;
-    private OrderStatus orderStatus;
-    private Employee waiter;
-    private Employee cook;
 
-    public Order() {
-        invoice = 0;
+//    @OneToMany(mappedBy = "dishWithPrice", fetch=FetchType.LAZY)
+//    private List<Dish> foodsWithPrice;
+
+    @Column(name = "invoice")
+    private Double invoice;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status")
+    //@JoinColumn(name = "order_status")
+    private OrderStatus orderStatus;
+    @ManyToOne
+    @JoinColumn(name = "waiter_id_fk")
+    private Employee waiter;
+    @ManyToOne
+    @JoinColumn(name = "cook_id_fk")
+    private Employee cook;
+    @ManyToOne
+    @JoinColumn(name = "client_id_fk")
+    private Client client;
+
+    public Order (){
+        invoice = 0.;
+        timestamp = 0l;
         dishes = new ArrayList<>();
     }
 
+//    public Order(List<Dish> foodsWithPrice) {
+//        this.foodsWithPrice = foodsWithPrice;
+//        invoice = 0;
+//        dishes = new ArrayList<>();
+//    }
+
+    public Order(int orderId){
+        id = orderId;
+    }
+
     public Order(int id, long timestamp, Table table, List<DishesInOrder> dishes,
-                 float invoice, OrderStatus orderStatus, Employee waiter, Employee cookToService ){
+                 double invoice, OrderStatus orderStatus, Employee waiter, Employee cookToService, Client client ){
         this.id = id;
         this.timestamp = timestamp;
         this.table = table;
@@ -34,14 +72,15 @@ public class Order {
         this.orderStatus = orderStatus;
         this.waiter = waiter;
         this.cook = cookToService;
+        this.client = client;
     }
 
-    public int getClientId() {
-        return clientId;
+    public Client getClient() {
+        return client;
     }
 
-    public void setClientId(int clientId) {
-        this.clientId = clientId;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public int getId() {

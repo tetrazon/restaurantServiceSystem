@@ -1,7 +1,12 @@
 package entity.users;
 
-public abstract class User {
+import javax.persistence.*;
 
+@MappedSuperclass
+public abstract class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     private String email;
     private String password;
@@ -11,6 +16,10 @@ public abstract class User {
 
     public User(){
 
+    }
+
+    public User(int id){
+        this.id = id;
     }
 
     public User(String email, String name, String surname, long created){

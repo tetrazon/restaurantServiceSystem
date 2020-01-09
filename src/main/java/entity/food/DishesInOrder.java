@@ -1,24 +1,60 @@
 package entity.food;
 
+import entity.order.Order;
+
+import javax.persistence.*;
+@Entity
+@Table(name = "dishes_in_order")
 public class DishesInOrder {
-    private  int orderId;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column (name = "id")
+private int id;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id_fk")
+    private Order order;
+    //@EmbeddedId
+    //@AttributeOverride(name="id", column = @Column(name="dish_id_fk"))
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "dish_id_fk")
     private Dish dish;
+    @Column(name = "quantity")
     int quantity;
 
     public DishesInOrder(){}
+
+    public DishesInOrder(Dish dish){
+        this.dish = dish;
+    }
 
     public DishesInOrder(Dish dish, int quantity) {
         this.dish = dish;
         this.quantity = quantity;
     }
 
-    public int getOrderId() {
-        return orderId;
+    public DishesInOrder(Order order){
+        this.order = order;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    public int getId() {
+        return id;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
 
     public Dish getDish() {
         return dish;

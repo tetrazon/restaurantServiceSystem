@@ -1,6 +1,7 @@
 package servlets;
 
 import entity.order.Order;
+import entity.users.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.OrderService;
@@ -27,11 +28,15 @@ public class OrderHistoryServlet extends HttpServlet {
         logger.info("order_details servlet");
         HttpSession session = request.getSession(true);
         Integer clientId = (Integer) session.getAttribute("clientId");
+        Client client = new Client(clientId);
         String destination = "order_history.jsp";
         if(clientId == null){
             destination = "/reg.jsp";
         }
-        List<Order>  orders = orderService.getAllClients(clientId);
+        List<Order>  orders = orderService.getAllOrders(client);
+        for(Order o: orders){
+            logger.info("order id: " + o.getId() + "; check " + o.getInvoice());
+        }
         session.setAttribute("orders", orders);
         request.getRequestDispatcher(destination).forward(request, response);
     }

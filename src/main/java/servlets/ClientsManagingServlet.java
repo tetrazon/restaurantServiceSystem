@@ -1,5 +1,6 @@
 package servlets;
 
+import entity.users.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.ClientService;
@@ -23,7 +24,8 @@ public class ClientsManagingServlet extends HttpServlet {
         logger.info("client id: " + clientId + "; deposit: " + clientNewDeposit);
         if(clientId != null && clientNewDeposit != null){
             double doubleDeposit = Double.parseDouble(clientNewDeposit);
-            clientService.updateDeposit(clientId, doubleDeposit);
+            Client client = clientService.getClientById(clientId);
+            clientService.updateDeposit(client, doubleDeposit);
             logger.info("deposit updated for client: " + clientId + "; new deposit is:" + doubleDeposit);
         }
         if(request.getParameter("delete")!= null){

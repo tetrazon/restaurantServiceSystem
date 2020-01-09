@@ -3,32 +3,44 @@ package service;
 import dao.DishDAO;
 import dao.EmployeeDAO;
 import dao.OrderDAO;
+import dao.hibernate.DishDAOHibernate;
+import dao.hibernate.EmployeeDAOHibernate;
+import dao.hibernate.OrderDAOHibernate;
+import dao.jdbc.DishDAOJdbc;
+import dao.jdbc.EmployeeDAOJdbc;
 import entity.food.Dish;
 import entity.food.DishesInOrder;
 import entity.order.Order;
 import entity.order.Table;
+import entity.users.Client;
 import entity.users.Employee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.RoundDouble;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 public class OrderService {
 
     private static Logger logger = LoggerFactory.getLogger(OrderService.class);
-    private static OrderDAO orderDAO = new OrderDAO();
-    private static DishDAO dishDAO = new DishDAO();
-    private static EmployeeDAO employeeDAO = new EmployeeDAO();
+    private static OrderDAO orderDAO = new OrderDAOHibernate();
+    private static DishDAO dishDAO = new DishDAOHibernate();
+    private static EmployeeDAO employeeDAO = new EmployeeDAOHibernate();
 
-    public List<Order> getAllClients(int clientId){
-       return orderDAO.getAllOrders(clientId);
+    public List<Order> getAllOrders(Client client){
+       List<Order> orders = orderDAO.getAllOrders(client);
+        Collections.sort(orders, (Order o1, Order o2) ->
+                o2.getTimestamp() - o1.getTimestamp()>0? 1:o2.getTimestamp() - o1.getTimestamp() == 0? 0:-1);
+        return orders;
     }
 
     public List<Dish> getAllDishes(){
-        return dishDAO.getAllDishes();
+        List<Dish> dishes = dishDAO.getAllDishes();
+        Collections.sort(dishes, Comparator.comparing(Dish::getId));
+        return dishes;
     }
 
     public Dish getDishById(int dishId){
@@ -47,7 +59,7 @@ public class OrderService {
         orderDAO.insertDishesInOrder(dishesInOrder);
     }
 
-    public void addDishesInOrderItems(int orderId, int[] dishesId, int [] dishQuantities){
+    public void addDishesInOrderItems(int orderId, int[] dishesId, int [] dishQuantities){//!!! -> Order
         List<Dish> dishes = new LinkedList<>();
         for (int i = 0; i < dishesId.length; i++) {
             Dish tempDish = getDishById(dishesId[i]);
@@ -57,16 +69,21 @@ public class OrderService {
             if(dishQuantities[i] == 0){// ignore empty fields
                 continue;
             }
-            DishesInOrder tempDishesInOrder = new DishesInOrder();
+            //Order orderWhichDishesAdded = new Order(orderId);
+            Order orderWhichDishesAdded = orderDAO.getById(orderId);
+            DishesInOrder tempDishesInOrder = new DishesInOrder(orderWhichDishesAdded);
             tempDishesInOrder.setQuantity(dishQuantities[i]);
             tempDishesInOrder.setDish(dishes.get(i));
-            tempDishesInOrder.setOrderId(orderId);
+            //tempDishesInOrder.setOrderId(orderId);//!!! -> Order
             addItemDishesInOrder(tempDishesInOrder);
         }
     }
 
     public void changeOrderStatus(int orderId, String status){
-        orderDAO.changeOrderStatus(orderId, status);
+        Order order = orderDAO.getById(orderId);
+        order.setOrderStatus(status);
+        logger.info("order status: " + order.getOrderStatus());
+        orderDAO.changeOrderStatus(order);
     }
 
     public Employee callEmployee(String position){
@@ -75,7 +92,7 @@ public class OrderService {
             logger.info("no free " + position);
             return null;
         }
-        if(!changeLoadFactor(freeEmployee.getId(), 1)){
+        if(!changeLoadFactor(freeEmployee, 1)){
             logger.error("critical error, can't change load factor");
             throw new IllegalArgumentException();
         }
@@ -83,37 +100,64 @@ public class OrderService {
         return freeEmployee;
     }
 
-    public boolean changeLoadFactor(int employeeId, int load){  //load = 1 or -1; add listeners for free employees?
+    public boolean changeLoadFactor(Employee employee, int load){  //load = 1 or -1; add listeners for free employees?
         if (load == -1){
             logger.info("some employee is ready to serve!");
         }
-        return employeeDAO.changeLoadFactor(load, employeeId);
+        int newLoad = employee.getLoadFactor()+load;
+        try {
+            if (!(Math.abs(load) < 2)) {
+
+                throw new IllegalArgumentException();
+            } else if (!(newLoad < 5 && newLoad >= 0)) {
+
+                throw new IllegalArgumentException();
+            }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        employee.setLoadFactor(newLoad);
+        return employeeDAO.changeLoadFactor(employee);
     }
 
-    public boolean addEmployeesInOrder(int waiterId, int cookId, int orderId){
-        orderDAO.addEmployeesInOrder(waiterId, cookId, orderId);
+    public boolean addEmployeesInOrder(Employee waiter, Employee cook, int orderId){
+        orderDAO.addEmployeesInOrder(waiter, cook, orderId);
 
         return true;
     }
 
     public void setTableStatus(boolean status, int tableId){
-        orderDAO.setTableStatus(status, tableId);
+        Table table = getTableById(tableId);
+        table.setReserved(status);
+        orderDAO.setTableStatus(table);
     }
 
     public Table getTableById(int tableId){
        return orderDAO.getTableById(tableId);
     }
 
-    public boolean initOrder(int clientId, int orderedTableId, double invoice){
-        return orderDAO.initOrder(clientId, orderedTableId, invoice);
+    public boolean initOrder(Client client, int orderedTableId, double invoice){
+        Order order = new Order();
+        order.setClient(client);
+        Table table = orderDAO.getTableById(orderedTableId);
+        order.setTable(table);
+        order.setInvoice(invoice);
+        order.setClient(client);
+        order.setOrderStatus("NEW");
+        logger.info("order info: table - " + order.getTable().getId() +
+                "; invoice: " + order.getInvoice() + "; client id: " + order.getClient().getId());
+        return orderDAO.initOrder(order);
     }
 
     public void setTimeOfOrder(int orderId){
-        orderDAO.setTimeOfOrder(orderId);
+        Order order = orderDAO.getById(orderId);
+        order.setTimestamp(System.currentTimeMillis());
+        logger.info("updated order time: " + order.getTimestamp());
+        orderDAO.setTimeOfOrder(order);
     }
 
-    public Integer getOrderId(int clientId, String orderStatus){
-        Integer orderId = orderDAO.getOrderId(clientId, orderStatus);
+    public Integer getOrderId(Client client, String orderStatus){
+        Integer orderId = orderDAO.getOrderId(client, orderStatus);
         if (orderId == null){
             logger.error("error getting order id");
             throw new NullPointerException();
@@ -150,9 +194,11 @@ public class OrderService {
     public double calculateSumOfOrder(int[] quantity, double [] dishPrices){
         double invoice = 0;
         for (int i = 0; i < quantity.length; i++) {
+            logger.info("quantity[i]: " + quantity[i] + "; dishPrices[i]: " + dishPrices[i]);
             invoice += quantity[i]*dishPrices[i];
         }
-        return roundDouble(invoice, 2);
+        logger.info("invoice before round: " + invoice);
+        return RoundDouble.roundDouble(invoice, 2);
     }
 
     public double calculateSumOfOrder(List<DishesInOrder> dishesInOrderList){
@@ -160,21 +206,20 @@ public class OrderService {
         for (int i = 0; i < dishesInOrderList.size(); i++) {
             sum += dishesInOrderList.get(i).getQuantity()*dishesInOrderList.get(i).getDish().getPrice();
         }
-        return roundDouble(sum, 2);
+        logger.info("invoice from order History: " + sum);
+        return RoundDouble.roundDouble(sum, 2);
     }
 
-    private double roundDouble(double doubleToRound, int scale){
-        return new BigDecimal(doubleToRound).setScale(scale, RoundingMode.UP).doubleValue();
-    }
-
-    public String processOrder(int clientId, int orderId, int tableId,
+    public String processOrder( int orderId, int tableId,
                                double invoice, int[] dishesId, int [] dishQuantities){
         String response = "";
        // Order order = new Order();
         Employee waiter = callEmployee("WAITER");
+        logger.info("waiter load factor: " + waiter.getLoadFactor());
         Employee cook = callEmployee("COOK");
+        logger.info("cook load factor: " + cook.getLoadFactor());
         if(cook != null && waiter != null){
-            addEmployeesInOrder(waiter.getId(),cook.getId(), orderId);
+            addEmployeesInOrder(waiter, cook, orderId);
             try {
                 changeOrderStatus(orderId, "IS_PROCESSING");
                 waiter.processOrder();
@@ -183,7 +228,7 @@ public class OrderService {
                 e.printStackTrace();
             }
             finishingOrder(waiter,cook, orderId, tableId);
-            addDishesInOrderItems(orderId, dishesId, dishQuantities);
+            addDishesInOrderItems(orderId, dishesId, dishQuantities);//!!! -> Order
             return "IS_FINISHED";
         } else if(cook == null && waiter!= null){
             // add waiter in order, form order, set order status cook_queue, and info need wait COOK, add listeners to catch COOK
@@ -197,19 +242,26 @@ public class OrderService {
     }
 
     public void finishingOrder(Employee waiter, Employee cook, int orderId, int tableId){
-        changeLoadFactor(waiter.getId(), -1);
-        changeLoadFactor(cook.getId(), -1);
+        logger.info("waiter load factor before finishing order: " + waiter.getLoadFactor());
+        changeLoadFactor(waiter, -1);
+        logger.info("waiter load factor after finishing order: " + waiter.getLoadFactor());
+        changeLoadFactor(cook, -1);
         changeOrderStatus(orderId, "IS_FINISHED");
         setTableStatus(false, tableId);
+
         setTimeOfOrder(orderId);
     }
 
     public List<DishesInOrder> getDishesFromOrder(int orderId){
-        return orderDAO.getDishesFromOrder(orderId);
+        Order order = orderDAO.getById(orderId);
+        return orderDAO.getDishesFromOrder(order);
     }
 
     public void updateDishById(int dishId, double newPrice, String newDescription){
-        dishDAO.updateDishById(dishId, newPrice, newDescription);
+        Dish dish = dishDAO.getDishById(dishId);
+        dish.setPrice(newPrice);
+        dish.setDescription(newDescription);
+        dishDAO.updateDish(dish);
     }
 
     public void deleteDishById(int dishId){
