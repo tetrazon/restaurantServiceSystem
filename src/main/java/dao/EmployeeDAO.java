@@ -6,9 +6,10 @@ import java.util.List;
 
 public interface EmployeeDAO {
     List<Employee> getAllEmployees(int emplId);
+    public Employee getEmployeById(int employeeId);
     void deleteEmployeeById(int employeeId);
     void create(Employee employee);
-    boolean changeLoadFactor(Employee employee);
+    boolean updateEmployee(Employee employee);
     Employee getFreeEmployee(String position);
     Employee getEmployeeByEmail(String emailToCheck);
 

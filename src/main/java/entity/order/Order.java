@@ -1,9 +1,14 @@
 package entity.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import entity.enumeration.OrderStatus;
 import entity.food.DishesInOrder;
 import entity.users.Client;
 import entity.users.Employee;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-//@Embeddable
 @javax.persistence.Table(name = "orders")
 public class Order implements Serializable {
 
@@ -24,7 +28,10 @@ public class Order implements Serializable {
     @ManyToOne
     @JoinColumn(name = "ordered_table_fk")
     private Table table;
-    @OneToMany(mappedBy = "order", fetch=FetchType.LAZY)
+    @OneToMany(mappedBy = "order") //, fetch=FetchType.LAZY
+    @LazyCollection(LazyCollectionOption.FALSE)
+    //@LazyCollection(LazyCollectionOption.TRUE)
+    @JsonIgnore
     private List<DishesInOrder> dishes;
 
 //    @OneToMany(mappedBy = "dishWithPrice", fetch=FetchType.LAZY)
@@ -40,9 +47,11 @@ public class Order implements Serializable {
     @JoinColumn(name = "waiter_id_fk")
     private Employee waiter;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "cook_id_fk")
     private Employee cook;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "client_id_fk")
     private Client client;
 

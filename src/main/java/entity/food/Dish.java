@@ -1,6 +1,10 @@
 package entity.food;
 
 import entity.enumeration.FoodCategory;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,6 +28,7 @@ public class Dish  implements Serializable {
     private String description;
 
     @OneToMany(mappedBy = "dish")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<DishesInOrder> dishesInOrders;
 
     public Dish(){}

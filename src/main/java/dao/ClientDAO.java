@@ -10,7 +10,7 @@ public interface ClientDAO {
     Client getClientByEmail(String emailToCheck);
     Client getClientById(int clientId);
     //void updateClientDeposit(int clientId, double newDeposit);
-    void updateClientDeposit(Client client);
+    void updateClient(Client client);
     void create(Client client);
 
 

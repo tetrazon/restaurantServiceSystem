@@ -43,6 +43,18 @@ public class EmployeeDAOHibernate implements EmployeeDAO {
     }
 
     @Override
+    public Employee getEmployeById(int employeeId){
+        try (Session session = sessionFactory.openSession()) {
+            Criteria criteria = session.createCriteria(Employee.class);
+            Employee employee = (Employee) criteria.add(Restrictions.eq("id", employeeId)).uniqueResult();
+            return employee;
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public void deleteEmployeeById(int employeeId) {
         try (Session session = sessionFactory.openSession()) {
             Criteria criteria = session.createCriteria(Employee.class);
@@ -68,7 +80,7 @@ public class EmployeeDAOHibernate implements EmployeeDAO {
     }
 
     @Override
-    public boolean changeLoadFactor(Employee employee) {
+    public boolean updateEmployee(Employee employee) {
         try (Session session = sessionFactory.openSession()) {
             Transaction trx = session.beginTransaction();
             session.update(employee);

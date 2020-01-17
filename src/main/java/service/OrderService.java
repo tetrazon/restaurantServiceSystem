@@ -6,8 +6,6 @@ import dao.OrderDAO;
 import dao.hibernate.DishDAOHibernate;
 import dao.hibernate.EmployeeDAOHibernate;
 import dao.hibernate.OrderDAOHibernate;
-import dao.jdbc.DishDAOJdbc;
-import dao.jdbc.EmployeeDAOJdbc;
 import entity.food.Dish;
 import entity.food.DishesInOrder;
 import entity.order.Order;
@@ -16,6 +14,7 @@ import entity.users.Client;
 import entity.users.Employee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import utils.RoundDouble;
 
 import java.util.Collections;
@@ -23,6 +22,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+@Service
 public class OrderService {
 
     private static Logger logger = LoggerFactory.getLogger(OrderService.class);
@@ -117,7 +117,7 @@ public class OrderService {
                 e.printStackTrace();
             }
         employee.setLoadFactor(newLoad);
-        return employeeDAO.changeLoadFactor(employee);
+        return employeeDAO.updateEmployee(employee);
     }
 
     public boolean addEmployeesInOrder(Employee waiter, Employee cook, int orderId){

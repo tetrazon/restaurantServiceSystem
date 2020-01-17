@@ -65,10 +65,10 @@ public class ClientDAOHibernate implements ClientDAO {
     }
 
     @Override
-    public void updateClientDeposit(Client client) {
+    public void updateClient(Client client) {
         try (Session session = sessionFactory.openSession()) {
             Transaction trx = session.beginTransaction();
-            session.update(client);
+            session.saveOrUpdate(client);
             trx.commit();
         } catch (HibernateException e) {
             e.printStackTrace();

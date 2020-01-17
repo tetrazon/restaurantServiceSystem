@@ -1,5 +1,6 @@
 package entity.food;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import entity.order.Order;
 
 import javax.persistence.*;
@@ -10,10 +11,11 @@ public class DishesInOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column (name = "id")
-private int id;
+    private int id;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id_fk")
+    @JsonIgnore
     private Order order;
     //@EmbeddedId
     //@AttributeOverride(name="id", column = @Column(name="dish_id_fk"))

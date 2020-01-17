@@ -2,20 +2,28 @@ package service;
 
 import dao.ClientDAO;
 import dao.hibernate.ClientDAOHibernate;
-import dao.jdbc.ClientDAOJdbc;
 import entity.users.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import utils.RoundDouble;
 
+//import javax.transaction.Transactional;
 import java.util.List;
-
+@Transactional
+@Service
 public class ClientService {
     private static Logger logger = LoggerFactory.getLogger(ClientService.class);
     private static ClientDAO clientDAO = new ClientDAOHibernate();
 
 public void add(Client client){
+    //client.setCreated(System.currentTimeMillis());
     clientDAO.create(client);
+}
+
+public void updateClient(Client client) {
+    clientDAO.updateClient(client);
 }
 
 public String getPasswordByEmail(String email){
@@ -46,7 +54,7 @@ public List<Client> getAll(){
 
     public void updateDeposit(Client client, double newDeposit){
     client.setDeposit(RoundDouble.roundDouble(newDeposit, 2));
-        clientDAO.updateClientDeposit(client);
+        clientDAO.updateClient(client);
     }
 
     public void deleteClient(int id){

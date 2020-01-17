@@ -2,11 +2,12 @@ package service;
 
 import dao.EmployeeDAO;
 import dao.hibernate.EmployeeDAOHibernate;
-import dao.jdbc.EmployeeDAOJdbc;
 import entity.users.Employee;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class EmployeeService {
     private static EmployeeDAO employeeDAO = new EmployeeDAOHibernate();
 
@@ -34,5 +35,13 @@ public class EmployeeService {
 
     public void create(Employee employee){
         employeeDAO.create(employee);
+    }
+
+    public Employee getEmployeeById(int employeeId){
+        return employeeDAO.getEmployeById(employeeId);
+    }
+
+    public boolean updateEmployee(Employee employee) {
+        return employeeDAO.updateEmployee(employee);
     }
 }
