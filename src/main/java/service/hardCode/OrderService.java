@@ -1,11 +1,8 @@
-package service;
+package service.hardCode;
 
 import dao.DishDAO;
 import dao.EmployeeDAO;
 import dao.OrderDAO;
-import dao.hibernate.DishDAOHibernate;
-import dao.hibernate.EmployeeDAOHibernate;
-import dao.hibernate.OrderDAOHibernate;
 import entity.food.Dish;
 import entity.food.DishesInOrder;
 import entity.order.Order;
@@ -14,7 +11,10 @@ import entity.users.Client;
 import entity.users.Employee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import utils.RoundDouble;
 
 import java.util.Collections;
@@ -23,12 +23,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class OrderService {
 
     private static Logger logger = LoggerFactory.getLogger(OrderService.class);
-    private static OrderDAO orderDAO = new OrderDAOHibernate();
-    private static DishDAO dishDAO = new DishDAOHibernate();
-    private static EmployeeDAO employeeDAO = new EmployeeDAOHibernate();
+    private OrderDAO orderDAO;
+    private DishDAO dishDAO;
+    private EmployeeDAO employeeDAO;
+
+    @Autowired
+    public OrderService(OrderDAO orderDAO, DishDAO dishDAO, EmployeeDAO employeeDAO){
+        this.orderDAO = orderDAO;
+        this.dishDAO = dishDAO;
+        this.employeeDAO = employeeDAO;
+    }
 
     public List<Order> getAllOrders(Client client){
        List<Order> orders = orderDAO.getAllOrders(client);

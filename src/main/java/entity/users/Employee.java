@@ -1,7 +1,7 @@
 package entity.users;
 
 import entity.enumeration.Position;
-
+import javax.persistence.Entity;
 import javax.persistence.*;
 
 @Entity

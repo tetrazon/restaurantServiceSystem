@@ -1,52 +1,43 @@
 package hibernate;
 
-import dao.hibernate.ClientDAOHibernate;
-import dao.hibernate.DishDAOHibernate;
-import dao.hibernate.EmployeeDAOHibernate;
-import dao.hibernate.OrderDAOHibernate;
-import entity.food.Dish;
-import entity.food.DishesInOrder;
+import dao.hibernate.ClientDAOImpl;
+import dao.hibernate.OrderDAOImpl;
 import entity.order.Order;
 import entity.order.Table;
 import entity.users.Client;
-import entity.users.Employee;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-
-import java.util.List;
 
 public class HibernateCheck {
     public static void main(String[] args) {
         System.out.println("Hibernate tutorial");
         //SessionFactory sessionFactory = HibernateSessionFactory.getSessionFactory();
-        OrderDAOHibernate orderDAOHibernate = new OrderDAOHibernate();
-//        List<Table> tables = orderDAOHibernate.getAllTables();
+        OrderDAOImpl orderDAOImpl = new OrderDAOImpl();
+//        List<Table> tables = orderDAOImpl.getAllTables();
 //        for(Table t: tables){
 //            System.out.println(t.getId() + "; is reserved " + t.getIsReserved());
 //        }
-//        System.out.println(orderDAOHibernate.getTableById(4).getIsReserved());
-//        Order order= orderDAOHibernate.getById(20);
-//        List<DishesInOrder> listDoshesOrder = orderDAOHibernate.getDishesFromOrder(order);
+//        System.out.println(orderDAOImpl.getTableById(4).getIsReserved());
+//        Order order= orderDAOImpl.getById(20);
+//        List<DishesInOrder> listDoshesOrder = orderDAOImpl.getDishesFromOrder(order);
 //        for(DishesInOrder d: listDoshesOrder){
 //            System.out.println(d.getQuantity());
 //        }
-                ClientDAOHibernate clientDAOHibernate = new ClientDAOHibernate();
-        Client client = clientDAOHibernate.getClientById(6);
-        Table table = orderDAOHibernate.getTable(4);
-        Order order = new Order();
-        order.setOrderStatus("NEW");
-        order.setInvoice(100500.);
-        order.setClient(client);
-        order.setTable(table);
-        orderDAOHibernate.initOrder(order);
-//        orderDAOHibernate.createOrder(order);
-//        Order order= orderDAOHibernate.getById(20);
+//                ClientDAOImpl clientDAOImpl = new ClientDAOImpl();
+//        Client client = clientDAOImpl.getClientById(6);
+//        Table table = orderDAOImpl.getTable(4);
+//        Order order = new Order();
+//        order.setOrderStatus("NEW");
+//        order.setInvoice(100500.);
+//        order.setClient(client);
+//        order.setTable(table);
+//        orderDAOImpl.initOrder(order);
+//        orderDAOImpl.createOrder(order);
+//        Order order= orderDAOImpl.getById(20);
 //        System.out.println("\n Order status:" + order.getOrderStatus());
-//        ClientDAOHibernate clientDAOHibernate = new ClientDAOHibernate();
-//        clientDAOHibernate.deleteClientById(42);
-//        Client client = clientDAOHibernate.getClientById(6);
-//        System.out.println(orderDAOHibernate.getOrderId(client, "NEW"));
-        //EmployeeDAOHibernate employeeDAOHibernate = new EmployeeDAOHibernate();
+//        ClientDAOImpl clientDAOImpl = new ClientDAOImpl();
+//        clientDAOImpl.deleteClientById(42);
+//        Client client = clientDAOImpl.getClientById(6);
+//        System.out.println(orderDAOImpl.getOrderId(client, "NEW"));
+        //EmployeeDAOImpl employeeDAOHibernate = new EmployeeDAOImpl();
         //employeeDAOHibernate.deleteEmployeeById(22);
         //Employee employee = employeeDAOHibernate.getEmployeeByEmail("waw@mail.ru");
         //System.out.println("employee: " + employee.getName());
@@ -60,32 +51,32 @@ public class HibernateCheck {
 //        employeeDAOHibernate.create(employee);
 //        employee.setLoadFactor(3);
 //        employeeDAOHibernate.changeLoadFactor(employee);
-//        orderDAOHibernate.addEmployeesInOrder(employeeDAOHibernate.getFreeEmployee("WAITER"),
+//        orderDAOImpl.addEmployeesInOrder(employeeDAOHibernate.getFreeEmployee("WAITER"),
 //                employeeDAOHibernate.getFreeEmployee("COOK"), 58);
 //        List<Employee> employees = employeeDAOHibernate.getAllEmployees(employeeDAOHibernate.getFreeEmployee("MANAGER").getId());
 //        for (Employee employee: employees){
 //            System.out.println("Employee id :" + employee.getId() + "; name: "
 //                    + employee.getName() + "; position: " + employee.getPosition());
 //        }
-//        List<Order> orders = orderDAOHibernate.getAllOrders(client);
+//        List<Order> orders = orderDAOImpl.getAllOrders(client);
 //        for(Order order: orders){
 //            System.out.println("order id: " + order.getId() + "; sum: " + order.getInvoice());
 //        }
-//        Table table = orderDAOHibernate.getTable(4);
+//        Table table = orderDAOImpl.getTable(4);
 //        System.out.println(table.getSeats());
-//        ClientDAOHibernate clientDAOHibernate = new ClientDAOHibernate();
-//        List<Client> clients = clientDAOHibernate.getAll();
+//        ClientDAOImpl clientDAOImpl = new ClientDAOImpl();
+//        List<Client> clients = clientDAOImpl.getAll();
 //        for (Client client: clients) {
 //            System.out.println("cliend id: " + client.getId() + ", client name: " + client.getName());
 //        }
-//        EmployeeDAOHibernate employeeDAOHibernate = new EmployeeDAOHibernate();
+//        EmployeeDAOImpl employeeDAOHibernate = new EmployeeDAOImpl();
 //        List<Employee> employees = employeeDAOHibernate.getAllEmployees();
 //        for (Employee employee: employees){
 //            System.out.println("Employee id :" + employee.getId() + "; name: "
 //                    + employee.getName() + "; position: " + employee.getPosition());
 //        }
 //
-//        DishDAOHibernate dishDAOHibernate = new DishDAOHibernate();
+//        DishDAOImpl dishDAOHibernate = new DishDAOImpl();
 //        Dish dish = dishDAOHibernate.getDishById(3);
 //        System.out.println("dish: " + dish.getName() + "; price: " + dish.getPrice());
 //        List<Dish> dishes = dishDAOHibernate.getAllDishes();

@@ -1,12 +1,11 @@
-package spring.controller;
+package controller;
 
 import entity.users.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import service.ClientService;
+import service.hardCode.ClientService;
 
 import java.util.List;
 
@@ -21,36 +20,36 @@ public class ClientsController {
         this.clientService = clientService;
     }
 
-    @RequestMapping(method= RequestMethod.GET, produces="application/json")// this method will only handle requests where JSON output is expected.
-    public @ResponseBody List<Client> getClients(){//@RequestBody Client client ;
+    @GetMapping
+    public @ResponseBody List<Client> getClients(){
         return clientService.getAll();
     }
 
-    @RequestMapping(value="/{id}", method= RequestMethod.GET, produces="application/json")
+    @GetMapping(value="/{id}")
     public  Client getClient(@PathVariable int id){
         return clientService.getClientById(id);
     }
 
-    @RequestMapping(value="/{id}", method= RequestMethod.DELETE)
+    @DeleteMapping(value="/{id}")
     public  ResponseEntity deleteClient(@PathVariable int id){
         clientService.deleteClient(id);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping(method= RequestMethod.PUT)
+    @PutMapping
     public  ResponseEntity updateClient(@RequestBody Client client){
         if (client == null){
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
         clientService.updateClient(client);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping(value="/new", method= RequestMethod.POST)
+    @PostMapping(value="/new")
     public  ResponseEntity addClient(@RequestBody Client client){
         clientService.add(client);
         if(client == null){
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity(HttpStatus.OK);
     }

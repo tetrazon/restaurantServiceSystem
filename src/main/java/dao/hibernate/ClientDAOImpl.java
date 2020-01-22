@@ -2,28 +2,33 @@ package dao.hibernate;
 
 import dao.ClientDAO;
 import entity.users.Client;
-import hibernate.HibernateSessionFactory;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
-public class ClientDAOHibernate implements ClientDAO {
+@Repository
+public class ClientDAOImpl implements ClientDAO {
 
+    @Autowired
     private SessionFactory sessionFactory;
 
-    public ClientDAOHibernate(){
-        sessionFactory = HibernateSessionFactory.getSessionFactory();
-    }
 
     @Override
     public void deleteClientById(int id) {
         try (Session session = sessionFactory.openSession()) {
             Criteria criteria = session.createCriteria(Client.class);
             Client client = (Client) criteria.add(Restrictions.eq("id", id)).uniqueResult();
-            Transaction trx = session.beginTransaction();
+            //Transaction trx = session.beginTransaction();
             session.delete(client);
-            trx.commit();
+            //trx.commit();
         } catch (HibernateException e) {
             e.printStackTrace();
         }
@@ -31,7 +36,7 @@ public class ClientDAOHibernate implements ClientDAO {
 
     @Override
     public List<Client> getAll() {
-        try (Session session = sessionFactory.openSession();) {
+        try (Session session = sessionFactory.openSession()) {
             Criteria criteria = session.createCriteria(Client.class);
             List<Client> clients = (List<Client>) criteria.list();
             return clients;
@@ -45,15 +50,14 @@ public class ClientDAOHibernate implements ClientDAO {
     public Client getClientByEmail(String emailToCheck) {
         try (Session session = sessionFactory.openSession()) {
             Criteria criteria = session.createCriteria(Client.class);
-            return (Client) criteria.add(Restrictions
-                    .eq("email", emailToCheck)).uniqueResult();
+            return (Client) criteria.add(Restrictions.eq("email", emailToCheck)).uniqueResult();
         } catch (HibernateException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public Client getClientById(int clientId){
+    public Client getClientById(int clientId) {
         try (Session session = sessionFactory.openSession()) {
             Criteria criteria = session.createCriteria(Client.class);
             Client client = (Client) criteria.add(Restrictions.eq("id", clientId)).uniqueResult();
@@ -67,9 +71,12 @@ public class ClientDAOHibernate implements ClientDAO {
     @Override
     public void updateClient(Client client) {
         try (Session session = sessionFactory.openSession()) {
-            Transaction trx = session.beginTransaction();
+            //Client tempClient = session.
+            //Transaction trx = session.beginTransaction();
+            //session.merge(client);
             session.saveOrUpdate(client);
-            trx.commit();
+            session.flush();
+            //trx.commit();
         } catch (HibernateException e) {
             e.printStackTrace();
         }
@@ -78,9 +85,9 @@ public class ClientDAOHibernate implements ClientDAO {
     @Override
     public void create(Client client) {
         try (Session session = sessionFactory.openSession()) {
-            Transaction trx = session.beginTransaction();
+            //Transaction trx = session.beginTransaction();
             session.save(client);
-            trx.commit();
+            //trx.commit();
         } catch (HibernateException e) {
             e.printStackTrace();
         }

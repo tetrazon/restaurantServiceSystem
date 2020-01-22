@@ -1,11 +1,10 @@
-package spring.controller;
+package controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import service.ClientService;
-
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import service.hardCode.ClientService;
 
 @Controller
 @RequestMapping("/login")
@@ -18,7 +17,7 @@ public class LoginController {// just for test jsp
         this.clientService = clientService;
     }
 
-    @RequestMapping(method=GET)
+    @GetMapping
     public String login() {
         return "login";
     }

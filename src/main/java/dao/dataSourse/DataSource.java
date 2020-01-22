@@ -1,11 +1,15 @@
 package dao.dataSourse;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+//@Component
 public class DataSource {
 
     private static DataSource instance = null;
@@ -31,4 +35,5 @@ public class DataSource {
         }
         return connection;
     }
+
 }

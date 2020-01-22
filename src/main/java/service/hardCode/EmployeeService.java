@@ -1,15 +1,23 @@
-package service;
+package service.hardCode;
 
 import dao.EmployeeDAO;
-import dao.hibernate.EmployeeDAOHibernate;
 import entity.users.Employee;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class EmployeeService {
-    private static EmployeeDAO employeeDAO = new EmployeeDAOHibernate();
+    private EmployeeDAO employeeDAO;
+
+    @Autowired
+    public EmployeeService(EmployeeDAO employeeDAO){
+        this.employeeDAO = employeeDAO;
+    }
 
     public String getPasswordByEmail(String emailToCheck){
 

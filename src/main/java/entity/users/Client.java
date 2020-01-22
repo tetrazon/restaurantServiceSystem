@@ -8,11 +8,16 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Entity;
+
+
+
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
-@Entity
+//@Entity
 //@Transactional
+@Entity
 @Table(name = "clients")
 public class Client extends User {
     @Column(name = "deposit")

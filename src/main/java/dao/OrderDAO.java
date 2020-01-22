@@ -5,10 +5,12 @@ import entity.order.Order;
 import entity.order.Table;
 import entity.users.Client;
 import entity.users.Employee;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface OrderDAO {
+@Repository
+public interface OrderDAO{
     void insertDishesInOrder(DishesInOrder dishesInOrder);
     void createOrder(Order order);
     void setTimeOfOrder(Order order);
