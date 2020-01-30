@@ -12,10 +12,10 @@ public class LoginControllerTest {}
 //import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 //
 //public class LoginControllerTest {
-//private ClientServiceInterface clientService;
+//private ClientServiceI clientService;
 //
 //@Autowired
-//public LoginControllerTest(ClientServiceInterface clientService){
+//public LoginControllerTest(ClientServiceI clientService){
 //    this.clientService = clientService;
 //}
 //    @Test
