@@ -12,7 +12,7 @@ public interface ClientServiceI{
     void delete(Integer id);
     void update(Client client);
     Client getClientByEmail(String emailToCheck);
-    Optional findById(Integer id);
+    Client findById(Integer id);
 
 
 }

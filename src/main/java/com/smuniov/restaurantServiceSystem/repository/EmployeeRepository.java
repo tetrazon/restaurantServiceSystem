@@ -1,5 +1,6 @@
 package com.smuniov.restaurantServiceSystem.repository;
 
+import com.smuniov.restaurantServiceSystem.entity.enumeration.Position;
 import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Employee findByEmail(String email);
 
     List findAllByOrderByLoadFactorAsc();
+    List findAllByPositionOrderByLoadFactorAsc(Position position);
+    //Employee getByEmail(String email);
+    boolean existsByEmail(String email);
 }

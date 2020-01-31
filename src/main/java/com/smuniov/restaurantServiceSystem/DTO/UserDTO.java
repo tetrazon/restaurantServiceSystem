@@ -12,11 +12,11 @@ import java.util.List;
 public class UserDTO <T extends User>{
     @JsonView(UserDataAccess.class)
     private int id;
-    //@JsonView(UserDataAccess.class)
+    @JsonView(UserDataAccess.class)
     private String email;
-    //@JsonView(UserDataAccess.class)
+    @JsonView(UserDataAccess.class)
     private String name;
-    //@JsonView(UserDataAccess.class)
+    @JsonView(UserDataAccess.class)
     private String surname;
     @JsonView(UserDataAccess.class)
     private long created;

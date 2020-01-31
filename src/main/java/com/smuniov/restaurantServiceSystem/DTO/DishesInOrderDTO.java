@@ -7,6 +7,8 @@ import java.util.List;
 
 public class DishesInOrderDTO {
     private int id;
+    private int dishId;
+    private int orderId;
     private String dishName;
     private double price;
     private int quantity;
@@ -19,6 +21,24 @@ public class DishesInOrderDTO {
         dishName = dishesInOrder.getDish().getName();
         price = dishesInOrder.getDish().getPrice();
         quantity = dishesInOrder.getQuantity();
+        dishId = dishesInOrder.getDish().getId();
+        orderId = dishesInOrder.getOrder().getId();
+    }
+
+    public int getDishId() {
+        return dishId;
+    }
+
+    public void setDishId(int dishId) {
+        this.dishId = dishId;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
     }
 
     public int getId() {

@@ -6,6 +6,7 @@ import com.smuniov.restaurantServiceSystem.entity.order.Table;
 import com.smuniov.restaurantServiceSystem.entity.users.Client;
 import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

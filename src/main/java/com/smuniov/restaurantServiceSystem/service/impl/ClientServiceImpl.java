@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,7 @@ public class ClientServiceImpl implements ClientServiceI {
 
     @Override
     public void create(Client client) {
+        try{
         if(client.getEmail() == null ||
                 client.getPassword() == null ||
                 client.getName() == null || client.getSurname() == null){
@@ -49,6 +51,8 @@ public class ClientServiceImpl implements ClientServiceI {
             clientRepository.save(client);
         } else {
             throw new BadRequestException("user with email " + client.getEmail() + "is existed!");
+        }} catch (ConstraintViolationException e){
+            throw new BadRequestException(e.getMessage());
         }
     }
 
@@ -58,8 +62,8 @@ public class ClientServiceImpl implements ClientServiceI {
     }
 
     @Override
-    public Optional<Client> findById(Integer id) {
-        return clientRepository.findById(id);
+    public Client findById(Integer id) {
+        return clientRepository.getOne(id);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.smuniov.restaurantServiceSystem.entity.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.smuniov.restaurantServiceSystem.entity.order.Order;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -14,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 @Entity
 @Table(name = "clients")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Client extends User {
     @Column(name = "deposit")
     private double deposit;

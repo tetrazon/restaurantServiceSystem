@@ -1,5 +1,9 @@
 package com.smuniov.restaurantServiceSystem.entity.food;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.smuniov.restaurantServiceSystem.entity.enumeration.FoodCategory;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -11,6 +15,8 @@ import java.util.List;
 @Entity
 //@Embeddable
 @Table(name = "dishes")
+//@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "$$_hibernate_interceptor"})
 public class Dish  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +30,24 @@ public class Dish  implements Serializable {
     private FoodCategory foodCategory;
     @Column(name = "description")
     private String description;
-
-    @OneToMany(mappedBy = "dish", cascade = {CascadeType.ALL})
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonIgnore
+    @OneToMany(mappedBy = "dish")//, cascade = {CascadeType.ALL}
+    @LazyCollection(LazyCollectionOption.TRUE)
     private List<DishesInOrder> dishesInOrders;
 
     public Dish(){}
+
+    public void setFoodCategory(FoodCategory foodCategory) {
+        this.foodCategory = foodCategory;
+    }
+
+    public List<DishesInOrder> getDishesInOrders() {
+        return dishesInOrders;
+    }
+
+    public void setDishesInOrders(List<DishesInOrder> dishesInOrders) {
+        this.dishesInOrders = dishesInOrders;
+    }
 
     public Dish(String name, double price) {
         this.name = name;

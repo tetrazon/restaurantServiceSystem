@@ -40,7 +40,7 @@ public class ClientsController {
 
     @GetMapping(value="/{id}")
     @RolesAllowed("ROLE_MANAGER")
-    public Optional<com.smuniov.restaurantServiceSystem.entity.users.Client> getClient(@PathVariable int id){
+    public Client getClient(@PathVariable int id){
         return clientServiceImpl.findById(id);
     }
 

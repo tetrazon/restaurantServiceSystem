@@ -4,6 +4,7 @@ import com.smuniov.restaurantServiceSystem.entity.users.Client;
 import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import com.smuniov.restaurantServiceSystem.repository.ClientRepository;
 import com.smuniov.restaurantServiceSystem.repository.EmployeeRepository;
+import org.apache.logging.log4j.LogManager;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +22,9 @@ import java.util.List;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {// Manager/ClientDataAccess collision!!!
 
-    private static Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+    //private static Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(UserDetailsServiceImpl.class.getName());
     @Autowired
     private ClientRepository clientRepository;
 

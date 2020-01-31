@@ -1,6 +1,9 @@
 package com.smuniov.restaurantServiceSystem.entity.users;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @MappedSuperclass
 public abstract class User {
@@ -8,9 +11,18 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
+    @NotNull
+    @Email
+    @Size(min=2, max=30)
     private String email;
+    @NotNull
+    @Size(min=3, max=30)
     private String password;
+    @NotNull
+    @Size(min=1, max=20)
     private String name;
+    @NotNull
+    @Size(min=1, max=20)
     private String surname;
     private long created;
 

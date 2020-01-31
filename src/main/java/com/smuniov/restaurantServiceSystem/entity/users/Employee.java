@@ -4,6 +4,8 @@ import com.smuniov.restaurantServiceSystem.entity.enumeration.Position;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "employees")
@@ -13,6 +15,8 @@ public class Employee extends User {
     //@JoinColumn(name = "position")
     private Position position;
     @Column(name = "load_factor")
+    @Min(0)
+    @Max(5)
     private int loadFactor; //0-5, 5 means busy
 
     public Employee(){
