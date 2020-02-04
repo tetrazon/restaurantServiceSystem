@@ -11,6 +11,7 @@ import com.smuniov.restaurantServiceSystem.entity.users.Client;
 import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import com.smuniov.restaurantServiceSystem.repository.*;
 import com.smuniov.restaurantServiceSystem.service.OrderServiceI;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderServiceI {
+
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(OrderServiceImpl.class);
     @Autowired
     private OrderRepository orderRepository;
 
@@ -103,7 +106,7 @@ public class OrderServiceImpl implements OrderServiceI {
         dishesInOrderRepository.saveAll(dishesInOrderList);
         order.setDishes(dishesInOrderList);
         orderRepository.save(order);
-
+        logger.info("client with id: " + client.getId() + " has created new order");
         return true;
     }
 
@@ -118,7 +121,7 @@ public class OrderServiceImpl implements OrderServiceI {
 
     @Override
     public void bookTable(int tableId, Order order) {
-        if(order.getOrderStatus() !=null && order.getTable() != null && order.getOrderStatus().equals("NEW")) {
+        if(order.getOrderStatus() !=null && order.getTable() == null && order.getOrderStatus().equals("NEW")) {//order.getOrderStatus() !=null && order.getTable() != null && order.getOrderStatus().equals("NEW")
             Table tableToBook = tableRepository.getOne(tableId);
             if (tableToBook.getIsReserved()) {
                 throw new BadRequestException("table is booked");
@@ -127,6 +130,7 @@ public class OrderServiceImpl implements OrderServiceI {
             tableRepository.save(tableToBook);
             order.setTable(tableToBook);
             tableRepository.save(tableToBook);
+            return;
         } throw new BadRequestException("you cannot book table if you have done it already, or dont init order");
     }
 
@@ -137,32 +141,51 @@ public class OrderServiceImpl implements OrderServiceI {
 
     @Override
     public void processOrder(int orderId, Employee waiter, Employee cook) {
-        Order orderToProcess = orderRepository.getOne(orderId);
-        orderToProcess.setOrderStatus("IS_PROCESSING");
-        if(waiter.getLoadFactor() == 5){
-            orderToProcess.setOrderStatus("WAITER_QUEUE");
-            orderRepository.save(orderToProcess);
-            throw new BadRequestException(" no free waiters!!!");
-        }
-        if(cook.getLoadFactor() == 5){//
-            orderToProcess.setOrderStatus("COOK_QUEUE");
-            orderRepository.save(orderToProcess);
-            throw new BadRequestException(" no free cooks!!!");
-        }
-        if(cook.getLoadFactor() == 5 && waiter.getLoadFactor() == 5){
-            orderToProcess.setOrderStatus("ALL_QUEUE");
-            throw new BadRequestException(" no all kinds of employee!!!");
-        }
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        Order orderToProcess = orderOptional.get();//orderRepository.getOne(orderId);
+        if (orderToProcess != null) {
+            String orderStatus = orderToProcess.getOrderStatus();
+            if(orderStatus.equals("IS_FINISHED")){
+                throw new BadRequestException("you cannot process finished order!");
+            }
+            if(orderStatus.equals("NEW")) {
+                orderToProcess.setOrderStatus("IS_PROCESSING");
+                if (cook.getLoadFactor() == 5 && waiter.getLoadFactor() == 5) {
+                    orderToProcess.setOrderStatus("ALL_QUEUE");
+                    throw new BadRequestException(" no all kinds of employee!!!");
+                }
+                if (waiter.getLoadFactor() == 5) {
+                    orderToProcess.setOrderStatus("WAITER_QUEUE");
+                    orderRepository.save(orderToProcess);
+                    throw new BadRequestException(" no free waiters!!!");
+                }
+                if (cook.getLoadFactor() == 5) {//
+                    orderToProcess.setOrderStatus("COOK_QUEUE");
+                    orderRepository.save(orderToProcess);
+                    throw new BadRequestException(" no free cooks!!!");
+                }
 
-        orderToProcess.setWaiter(waiter);
-        waiter.setLoadFactor(waiter.getLoadFactor() + 1);
-        orderToProcess.setCook(cook);
-        cook.setLoadFactor(cook.getLoadFactor() + 1);
-        employeeRepository.save(waiter);
-        employeeRepository.save(cook);
+                orderToProcess.setWaiter(waiter);
+                waiter.setLoadFactor(waiter.getLoadFactor() + 1);
+                orderToProcess.setCook(cook);
+                cook.setLoadFactor(cook.getLoadFactor() + 1);
+                employeeRepository.save(waiter);
+                employeeRepository.save(cook);
+            } else {
+                throw new BadRequestException(" no all kinds of employee, or some of them!!!");
+            }
+
+        }
     }
 
+
     public void finishOrder(Order order){
+        if(order.getOrderStatus() == null ){
+            throw new BadRequestException("bad order!");
+        }
+        if(!order.getOrderStatus().equals("IS_PROCESSING")){
+            throw new BadRequestException("you cannot finish order, which has no status IS_PROCESSING!");
+        }
 //load, balance,status
         Employee waiter = order.getWaiter();
         waiter.setLoadFactor(waiter.getLoadFactor() - 1);

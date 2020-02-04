@@ -10,12 +10,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 @EnableWebSecurity
@@ -28,11 +32,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
-
-//    @Bean ////If create that bean, Idea got the jwtRequestFilter field, but app doesnt start
-//    JwtRequestFilter jwtRequestFilter(){
-//        return new JwtRequestFilter();
-//    }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -53,7 +52,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
-                .authorizeRequests().antMatchers("/auth", "/clients/new").permitAll().
+                .authorizeRequests().antMatchers("/auth",
+                "/clients/new",
+               // "/", "/csrf",
+                "/webjars/springfox-swagger-ui/**",
+                "/v2/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/configuration/security",
+                "/swagger-ui.html",
+                "/webjars/**"
+                ).permitAll().
                     anyRequest().authenticated().and().
                     //antMatchers("/clients").access("hasRole('ROLE_ADMIN')").
                // and().
@@ -64,4 +73,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/v2/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/configuration/security",
+                "/swagger-ui.html",
+                "/webjars/**",
+                "/swagger.json");
+    }
+
+    @Bean
+    public WebMvcConfigurerAdapter adapter() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/swagger-ui.html");
+                registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+                super.addResourceHandlers(registry);
+            }
+        };
+    }
 }

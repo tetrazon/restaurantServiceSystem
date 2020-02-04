@@ -1,0 +1,43 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<configuration>
+    <Properties>
+        <Property name="log_dir">out/${date:yyyy_MM_dd_HH_mm_ss}</Property>
+    </Properties>
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <patternlayout pattern="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n">
+<!--                %style{%d{ISO8601}}{black} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable-->
+            </patternlayout></console>
+
+        <rollingfile name="RollingFile" filename="${log_dir}/spring-boot-logger-log4j2.log"
+                     filepattern="./logs/$${date:yyyy-MM}/spring-boot-logger-log4j2-%d{-dd-MMMM-yyyy}-%i.log.gz">
+            <patternlayout>
+                <pattern>%d [%-6p] %c{1} – %m%n</pattern>
+<!--                %d %p %C{1.} [%t] %m%n-->
+            </patternlayout>
+            <policies>
+                    <sizebasedtriggeringpolicy size="1 MB">
+                    </sizebasedtriggeringpolicy>
+            </policies>
+        </rollingfile>
+
+        <Async name="AsyncFile">
+            <AppenderRef ref="RollingFile"/>
+        </Async>
+        <Async name="AsyncConsole">
+            <AppenderRef ref="Console"/>
+        </Async>
+
+    </appenders>
+    <loggers>
+        <!-- LOG everything at INFO level -->
+        <root level="info">
+            <appenderref ref="Console"></appenderref>
+                <appenderref ref="RollingFile"></appenderref>
+        </root>
+
+        <!-- LOG "ru.devify*" at TRACE level -->
+        <logger name="ExceptionTranslationFilter" level="trace"></logger>
+    </loggers>
+
+</configuration>

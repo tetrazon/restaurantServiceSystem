@@ -5,6 +5,8 @@ import com.smuniov.restaurantServiceSystem.DTO.Transfer.ClientDataAccess;
 import com.smuniov.restaurantServiceSystem.DTO.UserDTO;
 import com.smuniov.restaurantServiceSystem.entity.users.Client;
 import com.smuniov.restaurantServiceSystem.service.impl.ClientServiceImpl;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/clients")
+
 public class ClientsController {
 
     @Autowired
@@ -29,6 +32,7 @@ public class ClientsController {
     @GetMapping
     @JsonView(ClientDataAccess.class)
     @RolesAllowed("ROLE_MANAGER")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<List<UserDTO>> getClients(){
 //        MultiValueMap<String, String> headers = new HttpHeaders();
 //        headers.add(HttpHeaders.LOCATION, "https://ololo");
@@ -40,12 +44,14 @@ public class ClientsController {
 
     @GetMapping(value="/{id}")
     @RolesAllowed("ROLE_MANAGER")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public Client getClient(@PathVariable int id){
         return clientServiceImpl.findById(id);
     }
 
     @DeleteMapping(value="/{id}")
     @RolesAllowed("ROLE_MANAGER")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public  ResponseEntity deleteClient(@PathVariable int id){
         clientServiceImpl.delete(id);
         return new ResponseEntity(OK);
@@ -53,6 +59,7 @@ public class ClientsController {
 
     @PutMapping
     @RolesAllowed("ROLE_MANAGER")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public  ResponseEntity updateClient(@RequestBody Client client){
         if (client == null){
             return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -62,6 +69,7 @@ public class ClientsController {
     }
 
     @PostMapping(value="/new")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public  ResponseEntity addClient(@RequestBody Client clientToAdd){
         clientServiceImpl.create(clientToAdd);
         return new ResponseEntity(OK);

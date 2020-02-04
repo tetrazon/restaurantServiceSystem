@@ -10,6 +10,8 @@ import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import com.smuniov.restaurantServiceSystem.service.impl.ClientServiceImpl;
 import com.smuniov.restaurantServiceSystem.service.impl.EmployeeServiceImpl;
 import com.smuniov.restaurantServiceSystem.service.impl.OrderServiceImpl;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,7 @@ public class OrdersController {
 
 
     @GetMapping(value="/client/{id}")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public @ResponseBody List getOrders(@PathVariable int id){//@RequestBody ClientDataAccess client ;
         List<Order> orders = orderService.getAllByClient_IdOrderByTimestamp(id);
         List<OrderDTO> orderDTOList = OrderDTO.toDTO(orders);
@@ -42,6 +45,7 @@ public class OrdersController {
     }
 
     @GetMapping(value="/tables")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public List<Table> getTables(){
         Table table = orderService.findTableById(4);
         table.setReserved(false);
@@ -50,12 +54,14 @@ public class OrdersController {
     }
 
     @GetMapping(value="/details/{orderId}")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public List getOrderDetail(@PathVariable int orderId){
         List<DishesInOrder> dishesInOrderList = orderService.findAllDishesInOrderByOrder_Id(orderId);
         return DishesInOrderDTO.toDTO(dishesInOrderList);
     }
 
     @PostMapping(value = "/client/{clientId}/new")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity initOrder(@PathVariable int clientId,
                                     @RequestBody List<DishesInOrderDTO> dishesInOrderDTOList){
         orderService.orderInit(clientService.findById(clientId), dishesInOrderDTOList);
@@ -63,12 +69,14 @@ public class OrdersController {
     }
 
     @PostMapping(value = "/order/{orderId}/book_table/{tableId}")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity bookTable(@PathVariable int tableId, @PathVariable int orderId){
         orderService.bookTable(tableId, orderService.getOrderById(orderId));
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping(value = "/order/{orderId}/process")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<String> processOrder(@PathVariable int orderId){
         Employee waiter = employeeService.getFree("WAITER");
         Employee cook = employeeService.getFree("COOK");
@@ -78,6 +86,7 @@ public class OrdersController {
     }
 
     @GetMapping(value = "/order/{orderId}/finish")
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<OrderDTO> finishOrder(@PathVariable int orderId){
         orderService.finishOrder(orderService.getOrderById(orderId));
         return new ResponseEntity(new OrderDTO(orderService.getOrderById(orderId)), HttpStatus.OK);
