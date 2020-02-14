@@ -16,6 +16,8 @@ public interface OrderServiceI {
     List getAllByClient_IdOrderByTimestamp(int id);
     List<DishesInOrder> findAllDishesInOrderByOrder_Id(int orderId);
     List<Table> getAllTables();
+    public void createTable(Table table);
+    void updateTable(Table table);
     List<Table> getAllTablesByReserved(boolean isReserved);
     void changeTableStatus(Table table);
     Table findTableById(int id);

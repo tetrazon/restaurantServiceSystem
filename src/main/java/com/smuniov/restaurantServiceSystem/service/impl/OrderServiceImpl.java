@@ -1,7 +1,6 @@
 package com.smuniov.restaurantServiceSystem.service.impl;
 
 import com.smuniov.restaurantServiceSystem.DTO.DishesInOrderDTO;
-import com.smuniov.restaurantServiceSystem.DTO.OrderDTO;
 import com.smuniov.restaurantServiceSystem.Exception.BadRequestException;
 import com.smuniov.restaurantServiceSystem.entity.food.Dish;
 import com.smuniov.restaurantServiceSystem.entity.food.DishesInOrder;
@@ -25,23 +24,23 @@ import java.util.Optional;
 public class OrderServiceImpl implements OrderServiceI {
 
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(OrderServiceImpl.class);
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+    private final DishesInOrderRepository dishesInOrderRepository;
+    private final TableRepository tableRepository;
+    private final EmployeeRepository employeeRepository;
+    private final DishRepository dishRepository;
+    private final ClientRepository clientRepository;
 
-    @Autowired
-    private DishesInOrderRepository dishesInOrderRepository;
-
-    @Autowired
-    private TableRepository tableRepository;
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private DishRepository dishRepository;
-
-    @Autowired
-    private ClientRepository clientRepository;
+    public OrderServiceImpl(OrderRepository orderRepository, DishesInOrderRepository dishesInOrderRepository,
+                            TableRepository tableRepository, EmployeeRepository employeeRepository,
+                            DishRepository dishRepository, ClientRepository clientRepository) {
+        this.orderRepository = orderRepository;
+        this.dishesInOrderRepository = dishesInOrderRepository;
+        this.tableRepository = tableRepository;
+        this.employeeRepository = employeeRepository;
+        this.dishRepository = dishRepository;
+        this.clientRepository = clientRepository;
+    }
 
 
     @Override
@@ -67,6 +66,20 @@ public class OrderServiceImpl implements OrderServiceI {
     @Override
     public List<Table> getAllTablesByReserved(boolean isReserved) {
         return tableRepository.findAllByIsReserved(isReserved);
+    }
+
+    public void createTable(Table table){
+        if(table == null){
+            throw new BadRequestException("empty table!");
+        }
+        tableRepository.save(table);
+    }
+
+    public void updateTable(Table table){
+        if (table == null || table.getId()== 0){
+            throw new BadRequestException("you cannot update empty table");
+        }
+        createTable(table);
     }
 
     @Override
@@ -106,7 +119,7 @@ public class OrderServiceImpl implements OrderServiceI {
         dishesInOrderRepository.saveAll(dishesInOrderList);
         order.setDishes(dishesInOrderList);
         orderRepository.save(order);
-        logger.info("client with id: " + client.getId() + " has created new order");
+        logger.info("client with id: " + client.getId() + " has created new order with id: " + order.getId());
         return true;
     }
 
@@ -207,6 +220,7 @@ public class OrderServiceImpl implements OrderServiceI {
         Table table = order.getTable();
         table.setReserved(false);
         tableRepository.save(table);
+        logger.info("order with id " + order.getId() + " is finished");
     }
 
     public void addSaveUpdateDish(Dish dish){

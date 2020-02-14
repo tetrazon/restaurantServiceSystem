@@ -24,7 +24,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-//@ComponentScan(basePackages = "com.smuniov.restaurantServiceSystem.security.filter")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -68,7 +67,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                // and().
                     exceptionHandling().
                 and().
-                    sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
+                and().
+                    logout().logoutSuccessUrl("/auth").permitAll();// is it work?
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
     }

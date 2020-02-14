@@ -1,45 +1,48 @@
 package com.smuniov.restaurantServiceSystem.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.smuniov.restaurantServiceSystem.DTO.Transfer.ClientDataAccess;
 import com.smuniov.restaurantServiceSystem.DTO.UserDTO;
+import com.smuniov.restaurantServiceSystem.Exception.BadRequestException;
 import com.smuniov.restaurantServiceSystem.entity.users.Client;
 import com.smuniov.restaurantServiceSystem.service.impl.ClientServiceImpl;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
-import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.FOUND;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/clients")
 
 public class ClientsController {
 
-    @Autowired
-    private ClientServiceImpl clientServiceImpl;
 
-    @GetMapping
-    @JsonView(ClientDataAccess.class)
+    private final ClientServiceImpl clientServiceImpl;
+
+    public ClientsController(ClientServiceImpl clientServiceImpl) {
+        this.clientServiceImpl = clientServiceImpl;
+    }
+
+    @GetMapping(produces="application/json")
+    //@JsonView(ClientDataAccess.class)
     @RolesAllowed("ROLE_MANAGER")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
-    public ResponseEntity<List<UserDTO>> getClients(){
-//        MultiValueMap<String, String> headers = new HttpHeaders();
-//        headers.add(HttpHeaders.LOCATION, "https://ololo");
-        List<Client> clients = clientServiceImpl.readAll();
+
+    public ResponseEntity<Page<UserDTO>> getClients(@PageableDefault(page=0, size = 10, sort = "name") Pageable pageable){//List<UserDTO>
+        List<Client> clients = clientServiceImpl.readAll(pageable).getContent();
         List<UserDTO> clientsDto = new UserDTO<Client>().toDTO(clients);
-        return new ResponseEntity<>(clientsDto, OK);
-//        return new ResponseEntity<>(clientsDto, headers, FOUND);
+        Page<UserDTO> userDTOPage= new PageImpl<>(clientsDto, pageable, clientsDto.size());
+        return new ResponseEntity<>(userDTOPage, FOUND);
     }
 
     @GetMapping(value="/{id}")
@@ -72,7 +75,7 @@ public class ClientsController {
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public  ResponseEntity addClient(@RequestBody Client clientToAdd){
         clientServiceImpl.create(clientToAdd);
-        return new ResponseEntity(OK);
+        return new ResponseEntity(CREATED);
     }
 
 }

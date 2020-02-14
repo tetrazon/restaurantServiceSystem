@@ -1,6 +1,7 @@
 package com.smuniov.restaurantServiceSystem.entity.order;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @javax.persistence.Table(name = "tables_in_restaurant")
@@ -9,6 +10,7 @@ public class Table {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
+    @NotNull
     @Column(name = "seats")
     private  int seats;
     @Column(name = "is_reserved")

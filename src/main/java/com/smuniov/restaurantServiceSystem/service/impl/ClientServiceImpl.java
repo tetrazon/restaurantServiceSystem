@@ -7,12 +7,13 @@ import com.smuniov.restaurantServiceSystem.repository.EmployeeRepository;
 import com.smuniov.restaurantServiceSystem.service.ClientServiceI;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -20,11 +21,14 @@ public class ClientServiceImpl implements ClientServiceI {
 
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(ClientServiceImpl.class.getName());
 
-    @Autowired
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
 
-    @Autowired
-    EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
+
+    public ClientServiceImpl(ClientRepository clientRepository, EmployeeRepository employeeRepository) {
+        this.clientRepository = clientRepository;
+        this.employeeRepository = employeeRepository;
+    }
 
     @Override
     public void update(Client client){
@@ -63,6 +67,10 @@ public class ClientServiceImpl implements ClientServiceI {
         return clientRepository.findAll();
     }
 
+    public Page<Client> readAll(Pageable pageable) {
+        return clientRepository.findAll(pageable);
+    }
+
     @Override
     public Client findById(Integer id) {
         return clientRepository.getOne(id);
@@ -72,4 +80,6 @@ public class ClientServiceImpl implements ClientServiceI {
     public void delete(Integer id) {
         clientRepository.deleteById(id);
     }
+
+
 }

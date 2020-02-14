@@ -5,20 +5,22 @@ import com.smuniov.restaurantServiceSystem.DTO.OrderDTO;
 import com.smuniov.restaurantServiceSystem.entity.food.DishesInOrder;
 import com.smuniov.restaurantServiceSystem.entity.order.Order;
 import com.smuniov.restaurantServiceSystem.entity.order.Table;
-import com.smuniov.restaurantServiceSystem.entity.users.Client;
 import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import com.smuniov.restaurantServiceSystem.service.impl.ClientServiceImpl;
 import com.smuniov.restaurantServiceSystem.service.impl.EmployeeServiceImpl;
 import com.smuniov.restaurantServiceSystem.service.impl.OrderServiceImpl;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -26,32 +28,28 @@ import java.util.List;
 @RolesAllowed({"ROLE_CLIENT", "ROLE_MANAGER"})
 public class OrdersController {
 
-    @Autowired
-    private OrderServiceImpl orderService;
+    private final OrderServiceImpl orderService;
 
-    @Autowired
-    private ClientServiceImpl clientService;
+    private final ClientServiceImpl clientService;
 
-    @Autowired
-    private EmployeeServiceImpl employeeService;
+    private final EmployeeServiceImpl employeeService;
+
+    public OrdersController(OrderServiceImpl orderService, ClientServiceImpl clientService, EmployeeServiceImpl employeeService) {
+        this.orderService = orderService;
+        this.clientService = clientService;
+        this.employeeService = employeeService;
+    }
 
 
     @GetMapping(value="/client/{id}")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
-    public @ResponseBody List getOrders(@PathVariable int id){//@RequestBody ClientDataAccess client ;
+    public ResponseEntity getOrders(@PathVariable int id, Pageable pageable){//@RequestBody ClientDataAccess client ; @ResponseBody List
         List<Order> orders = orderService.getAllByClient_IdOrderByTimestamp(id);
         List<OrderDTO> orderDTOList = OrderDTO.toDTO(orders);
-        return orderDTOList;
+        Page<OrderDTO> ordersDTOPage= new PageImpl<>(orderDTOList, pageable, orderDTOList.size());
+        return new ResponseEntity(ordersDTOPage, HttpStatus.FOUND);
     }
 
-    @GetMapping(value="/tables")
-    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
-    public List<Table> getTables(){
-        Table table = orderService.findTableById(4);
-        table.setReserved(false);
-        orderService.changeTableStatus(table);
-        return orderService.getAllTables();
-    }
 
     @GetMapping(value="/details/{orderId}")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
@@ -60,22 +58,24 @@ public class OrdersController {
         return DishesInOrderDTO.toDTO(dishesInOrderList);
     }
 
-    @PostMapping(value = "/client/{clientId}/new")
+    @PostMapping(value = "/new")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
-    public ResponseEntity initOrder(@PathVariable int clientId,
-                                    @RequestBody List<DishesInOrderDTO> dishesInOrderDTOList){
+    public ResponseEntity initOrder(@RequestBody List<DishesInOrderDTO> dishesInOrderDTOList){
+        UserDetails userDetails =
+                (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int clientId = clientService.getClientByEmail(userDetails.getUsername()).getId();
         orderService.orderInit(clientService.findById(clientId), dishesInOrderDTOList);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/order/{orderId}/book_table/{tableId}")
+    @PostMapping(value = "/{orderId}/book_table/{tableId}")// change to presetted table
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity bookTable(@PathVariable int tableId, @PathVariable int orderId){
         orderService.bookTable(tableId, orderService.getOrderById(orderId));
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/order/{orderId}/process")
+    @GetMapping(value = "/{orderId}/process")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<String> processOrder(@PathVariable int orderId){
         Employee waiter = employeeService.getFree("WAITER");
@@ -85,7 +85,7 @@ public class OrdersController {
         return new ResponseEntity(orderService.getOrderById(orderId).getOrderStatus(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/order/{orderId}/finish")
+    @GetMapping(value = "/{orderId}/finish")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<OrderDTO> finishOrder(@PathVariable int orderId){
         orderService.finishOrder(orderService.getOrderById(orderId));
