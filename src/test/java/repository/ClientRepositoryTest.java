@@ -3,7 +3,6 @@ package repository;
 import com.smuniov.restaurantServiceSystem.Main;
 import com.smuniov.restaurantServiceSystem.entity.users.Client;
 import com.smuniov.restaurantServiceSystem.repository.ClientRepository;
-import javafx.application.Application;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
