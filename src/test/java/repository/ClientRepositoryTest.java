@@ -26,11 +26,6 @@ import static org.junit.Assert.assertEquals;
 @TestPropertySource("classpath:test.properties")
 public class ClientRepositoryTest {
 
-//    static {
-//        System.setProperty("spring.config.location", "classpath:test.properties");//spring.datasource.data=classpath:data.sql
-//        //System.setProperty("spring.datasource.data", "classpath:data.sql");
-//    }
-
     @Autowired
     private ClientRepository clientRepository;
 
@@ -47,7 +42,7 @@ public class ClientRepositoryTest {
     }
 
     @Test
-    public void testTable() {
+    public void readingFromDbTest() {
 
         Client clientFromDB = clientRepository.findByEmail("olololo@mail.ru");
         assertNotNull(clientFromDB);

@@ -23,26 +23,20 @@ public class Order implements Serializable {
     private int id;
     @Column(name = "date_of_order")
     private Long timestamp;
-    @ManyToOne(fetch=FetchType.LAZY)//cascade = {CascadeType.ALL}
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "ordered_table_fk")
     @JsonIgnore
     private Table table;
-    @OneToMany(mappedBy = "order", fetch=FetchType.LAZY) //, fetch=FetchType.LAZY //cascade = {CascadeType.ALL}
-    //@LazyCollection(LazyCollectionOption.FALSE)
-    //@LazyCollection(LazyCollectionOption.TRUE)
+    @OneToMany(mappedBy = "order", fetch=FetchType.LAZY)
     @JsonIgnore
     private List<DishesInOrder> dishes;
-
-//    @OneToMany(mappedBy = "dishWithPrice", fetch=FetchType.LAZY)
-//    private List<Dish> foodsWithPrice;
 
     @Column(name = "invoice")
     private Double invoice;
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status")
-    //@JoinColumn(name = "order_status")
     private OrderStatus orderStatus;
-    @ManyToOne(fetch=FetchType.LAZY)//cascade = {CascadeType.ALL}
+    @ManyToOne(fetch=FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "waiter_id_fk")
     private Employee waiter;
@@ -60,12 +54,6 @@ public class Order implements Serializable {
         timestamp = 0l;
         dishes = new ArrayList<>();
     }
-
-//    public Order(List<Dish> foodsWithPrice) {
-//        this.foodsWithPrice = foodsWithPrice;
-//        invoice = 0;
-//        dishes = new ArrayList<>();
-//    }
 
     public Order(int orderId){
         id = orderId;

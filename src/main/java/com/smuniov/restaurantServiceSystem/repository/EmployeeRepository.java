@@ -15,6 +15,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     List findAllByOrderByLoadFactorAsc();
     List findAllByPositionOrderByLoadFactorAsc(Position position);
-    //Employee getByEmail(String email);
     boolean existsByEmail(String email);
 }

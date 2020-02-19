@@ -1,5 +1,6 @@
 package com.smuniov.restaurantServiceSystem.service.impl;
 
+import com.smuniov.restaurantServiceSystem.DTO.UserDTO;
 import com.smuniov.restaurantServiceSystem.Exception.BadRequestException;
 import com.smuniov.restaurantServiceSystem.entity.enumeration.Position;
 import com.smuniov.restaurantServiceSystem.entity.users.Employee;
@@ -8,6 +9,9 @@ import com.smuniov.restaurantServiceSystem.repository.EmployeeRepository;
 import com.smuniov.restaurantServiceSystem.service.EmployeeServiceI;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +37,13 @@ public class EmployeeServiceImpl implements EmployeeServiceI {
     @Override
     public List getAll() {
         return employeeRepository.findAllByOrderByLoadFactorAsc();
+    }
+
+    public Page<UserDTO> getAll(Pageable pageable){
+        List all = employeeRepository.findAll(pageable).getContent();
+        List<UserDTO> employeesDto = new UserDTO<Employee>().toDTO(all);
+        Page<UserDTO> employeeDTOPage= new PageImpl<>(employeesDto, pageable, employeesDto.size());
+        return employeeDTOPage;
     }
 
     @Override

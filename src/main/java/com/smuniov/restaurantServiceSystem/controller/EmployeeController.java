@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.smuniov.restaurantServiceSystem.DTO.Transfer.UserDataAccess;
 import com.smuniov.restaurantServiceSystem.DTO.UserDTO;
 import com.smuniov.restaurantServiceSystem.entity.users.Employee;
+import com.smuniov.restaurantServiceSystem.service.EmployeeServiceI;
 import com.smuniov.restaurantServiceSystem.service.impl.EmployeeServiceImpl;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -27,27 +28,21 @@ import java.util.Optional;
 @RequestMapping("/employees")
 public class EmployeeController {
 
-    private final EmployeeServiceImpl employeeService;
+    private final EmployeeServiceI employeeService;
 
-    public EmployeeController(EmployeeServiceImpl employeeService) {
+    public EmployeeController(EmployeeServiceI employeeService) {
         this.employeeService = employeeService;
     }
 
     @GetMapping(value="/all")
-    //@JsonView(UserDataAccess.class)//!!! write own JSON builder
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
-    public ResponseEntity<Page> getEmployees(@PageableDefault(page=0, size = 3, sort = "name") Pageable pageable){//@ResponseBody List
-        List all = employeeService.getAll();
-        List<UserDTO> employeesDto = new UserDTO<Employee>().toDTO(all);
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), employeesDto.size());//(start + pageable.getPageSize()) > users.size() ? users.size() : (start + pageable.getPageSize())
-        Page<UserDTO> employeeDTOPage= new PageImpl<>(employeesDto.subList(start, end), pageable, employeesDto.size());
+    public ResponseEntity<Page> getEmployees(@PageableDefault(page=0, size = 10, sort = "name") Pageable pageable){
+        Page<UserDTO> employeeDTOPage = employeeService.getAll(pageable);
         return new ResponseEntity<>(employeeDTOPage, HttpStatus.FOUND);
     }
 
     @GetMapping(value="/{id}")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
-   // @RequestMapping(value="/{id}", method= RequestMethod.GET, produces="application/json")
     public Optional getEmployee(@PathVariable int id){
         return employeeService.findById(id);
     }

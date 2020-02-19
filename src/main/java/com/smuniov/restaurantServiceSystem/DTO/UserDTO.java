@@ -9,7 +9,7 @@ import com.smuniov.restaurantServiceSystem.entity.users.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDTO <T extends User>{
+public class UserDTO <T extends User> {
     @JsonView(UserDataAccess.class)
     private int id;
     @JsonView(UserDataAccess.class)

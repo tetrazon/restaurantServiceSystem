@@ -7,8 +7,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -17,12 +15,9 @@ import static junit.framework.TestCase.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Main.class)
-//@TestPropertySource(locations="src/test/resource/test.properties") //doesnt work
+@TestPropertySource("classpath:test.properties")
 public class DishRepositoryTest {
 
-    static {
-        System.setProperty("spring.config.location", "classpath:test.properties");
-    }
 
     @Autowired
     private DishRepository dishRepository;

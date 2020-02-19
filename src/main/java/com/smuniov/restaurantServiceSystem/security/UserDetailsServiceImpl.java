@@ -5,7 +5,6 @@ import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import com.smuniov.restaurantServiceSystem.repository.ClientRepository;
 import com.smuniov.restaurantServiceSystem.repository.EmployeeRepository;
 import org.apache.logging.log4j.LogManager;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,15 +13,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {// Manager/ClientDataAccess collision!!!
-
-    //private static Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(UserDetailsServiceImpl.class.getName());
     @Autowired

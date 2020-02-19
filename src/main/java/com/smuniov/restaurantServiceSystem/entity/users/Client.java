@@ -3,8 +3,6 @@ package com.smuniov.restaurantServiceSystem.entity.users;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.smuniov.restaurantServiceSystem.entity.order.Order;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.Entity;
 
@@ -19,10 +17,8 @@ import java.util.List;
 public class Client extends User {
     @Column(name = "deposit")
     private double deposit;
-    @OneToMany(mappedBy = "client", fetch=FetchType.LAZY)//cascade = {CascadeType.ALL},
-    //@LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "client", fetch=FetchType.LAZY)
     @JsonIgnore
-    //@OneToMany(mappedBy = "client", fetch=FetchType.LAZY)
     private List<Order> orders;
 
     public Client(){

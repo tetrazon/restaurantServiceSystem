@@ -1,7 +1,9 @@
 package com.smuniov.restaurantServiceSystem.service.impl;
 
 import com.smuniov.restaurantServiceSystem.DTO.DishesInOrderDTO;
+import com.smuniov.restaurantServiceSystem.DTO.OrderDTO;
 import com.smuniov.restaurantServiceSystem.Exception.BadRequestException;
+import com.smuniov.restaurantServiceSystem.controller.OrdersController;
 import com.smuniov.restaurantServiceSystem.entity.food.Dish;
 import com.smuniov.restaurantServiceSystem.entity.food.DishesInOrder;
 import com.smuniov.restaurantServiceSystem.entity.order.Order;
@@ -11,13 +13,18 @@ import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import com.smuniov.restaurantServiceSystem.repository.*;
 import com.smuniov.restaurantServiceSystem.service.OrderServiceI;
 import org.apache.logging.log4j.LogManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 @Transactional
@@ -46,6 +53,15 @@ public class OrderServiceImpl implements OrderServiceI {
     @Override
     public List findAllOrders(Client client) {
         return orderRepository.getAllByClientOrderByTimestampAsc(client);
+    }
+
+    public Page<Order> findAllOrders(Pageable pageable){
+        return orderRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Order> findAllOrdersByClientId(Pageable pageable, int clientId) {
+        return orderRepository.getAllByClient_Id(pageable, clientId);
     }
 
     @Override
@@ -97,9 +113,14 @@ public class OrderServiceImpl implements OrderServiceI {
         return false;
     }
 
-    @Override
-    public boolean orderInit(Client client, List<DishesInOrderDTO> dishesInOrderDTOList) {
-        double balance = checkDeposit(client, dishesInOrderDTOList);
+    public OrderDTO orderInit(Client client, OrderDTO orderDTO){
+        if (orderDTO.getDishesInOrderDTOS().size() == 0){
+            throw new BadRequestException("you cannot create empty order");
+        }
+        if (orderDTO.getTableId() == 0){
+            throw new BadRequestException("you cannot make the order without table");
+        }
+        double balance = checkDeposit(client, orderDTO.getDishesInOrderDTOS());
         if(balance < 0.){
             throw new BadRequestException("client need " + -balance + " to make an order");
         }
@@ -108,19 +129,26 @@ public class OrderServiceImpl implements OrderServiceI {
         order.setOrderStatus("NEW");
         order.setTimestamp(System.currentTimeMillis());
         List<DishesInOrder> dishesInOrderList = new ArrayList<>();
-        for (int i = 0; i < dishesInOrderDTOList.size(); i++) {
+        for (int i = 0; i < orderDTO.getDishesInOrderDTOS().size(); i++) {
             DishesInOrder tempDishInOrder = new DishesInOrder();
             tempDishInOrder.setOrder(order);
             tempDishInOrder.setDish(dishRepository.
-                    getOne(dishesInOrderDTOList.get(i).getDishId()));
-            tempDishInOrder.setQuantity(dishesInOrderDTOList.get(i).getQuantity());
+                    getOne(orderDTO.getDishesInOrderDTOS().get(i).getDishId()));
+            tempDishInOrder.setQuantity(orderDTO.getDishesInOrderDTOS().get(i).getQuantity());
             dishesInOrderList.add(tempDishInOrder);
         }
         dishesInOrderRepository.saveAll(dishesInOrderList);
         order.setDishes(dishesInOrderList);
+        bookTable(orderDTO.getTableId());
+        order.setTable(tableRepository.findById(orderDTO.getTableId()));
         orderRepository.save(order);
+        OrderDTO orderDTOresp = new OrderDTO(order);
+        orderDTOresp.add(linkTo(
+                methodOn(OrdersController.class)
+                        .processOrder(orderDTOresp.getId()))
+                        .withRel("process"));
         logger.info("client with id: " + client.getId() + " has created new order with id: " + order.getId());
-        return true;
+        return orderDTOresp;
     }
 
     @Override
@@ -132,19 +160,13 @@ public class OrderServiceImpl implements OrderServiceI {
         return client.getDeposit()-invoice;
     }
 
-    @Override
-    public void bookTable(int tableId, Order order) {
-        if(order.getOrderStatus() !=null && order.getTable() == null && order.getOrderStatus().equals("NEW")) {//order.getOrderStatus() !=null && order.getTable() != null && order.getOrderStatus().equals("NEW")
-            Table tableToBook = tableRepository.getOne(tableId);
-            if (tableToBook.getIsReserved()) {
-                throw new BadRequestException("table is booked");
-            }
-            tableToBook.setReserved(true);
-            tableRepository.save(tableToBook);
-            order.setTable(tableToBook);
-            tableRepository.save(tableToBook);
-            return;
-        } throw new BadRequestException("you cannot book table if you have done it already, or dont init order");
+    public void bookTable(int tableId){
+        Table tableToBook = tableRepository.getOne(tableId);
+        if (tableToBook.getIsReserved()) {
+            throw new BadRequestException("this table is booked, choose another one");
+        }
+        tableToBook.setReserved(true);
+        tableRepository.save(tableToBook);
     }
 
     @Override
@@ -155,13 +177,13 @@ public class OrderServiceImpl implements OrderServiceI {
     @Override
     public void processOrder(int orderId, Employee waiter, Employee cook) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order orderToProcess = orderOptional.get();//orderRepository.getOne(orderId);
-        if (orderToProcess != null) {
+        if(orderOptional.isPresent()){
+            Order orderToProcess = orderOptional.get();
             String orderStatus = orderToProcess.getOrderStatus();
-            if(orderStatus.equals("IS_FINISHED")){
+            if (orderStatus.equals("IS_FINISHED")) {
                 throw new BadRequestException("you cannot process finished order!");
             }
-            if(orderStatus.equals("NEW")) {
+            if (orderStatus.equals("NEW")) {
                 orderToProcess.setOrderStatus("IS_PROCESSING");
                 if (cook.getLoadFactor() == 5 && waiter.getLoadFactor() == 5) {
                     orderToProcess.setOrderStatus("ALL_QUEUE");
@@ -172,7 +194,7 @@ public class OrderServiceImpl implements OrderServiceI {
                     orderRepository.save(orderToProcess);
                     throw new BadRequestException(" no free waiters!!!");
                 }
-                if (cook.getLoadFactor() == 5) {//
+                if (cook.getLoadFactor() == 5) {
                     orderToProcess.setOrderStatus("COOK_QUEUE");
                     orderRepository.save(orderToProcess);
                     throw new BadRequestException(" no free cooks!!!");
@@ -187,7 +209,8 @@ public class OrderServiceImpl implements OrderServiceI {
             } else {
                 throw new BadRequestException(" no all kinds of employee, or some of them!!!");
             }
-
+        } else {
+            throw new BadRequestException(" no order present!!!");
         }
     }
 
@@ -199,7 +222,6 @@ public class OrderServiceImpl implements OrderServiceI {
         if(!order.getOrderStatus().equals("IS_PROCESSING")){
             throw new BadRequestException("you cannot finish order, which has no status IS_PROCESSING!");
         }
-//load, balance,status
         Employee waiter = order.getWaiter();
         waiter.setLoadFactor(waiter.getLoadFactor() - 1);
         employeeRepository.save(waiter);

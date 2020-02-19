@@ -27,7 +27,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;//WHY Idea doesnt like it?
+    private JwtRequestFilter jwtRequestFilter;
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;

@@ -1,5 +1,6 @@
 package com.smuniov.restaurantServiceSystem.service.impl;
 
+import com.smuniov.restaurantServiceSystem.DTO.UserDTO;
 import com.smuniov.restaurantServiceSystem.Exception.BadRequestException;
 import com.smuniov.restaurantServiceSystem.entity.users.Client;
 import com.smuniov.restaurantServiceSystem.repository.ClientRepository;
@@ -8,6 +9,7 @@ import com.smuniov.restaurantServiceSystem.service.ClientServiceI;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,13 +64,16 @@ public class ClientServiceImpl implements ClientServiceI {
         }
     }
 
-    @Override
-    public List readAll() {
-        return clientRepository.findAll();
-    }
 
-    public Page<Client> readAll(Pageable pageable) {
-        return clientRepository.findAll(pageable);
+//    public Page<Client> readAll(Pageable pageable) {
+//        return clientRepository.findAll(pageable);
+//    }
+
+    public Page<UserDTO> readAll(Pageable pageable){
+        List<Client> clients = clientRepository.findAll(pageable).getContent();
+        List<UserDTO> clientsDto = new UserDTO<Client>().toDTO(clients);
+        Page<UserDTO> userDTOPage= new PageImpl<>(clientsDto, pageable, clientsDto.size());
+        return userDTOPage;
     }
 
     @Override

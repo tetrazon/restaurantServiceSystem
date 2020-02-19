@@ -12,7 +12,6 @@ import javax.validation.constraints.Min;
 public class Employee extends User {
     @Enumerated(EnumType.STRING)
     @Column(name = "position")
-    //@JoinColumn(name = "position")
     private Position position;
     @Column(name = "load_factor")
     @Min(0)
