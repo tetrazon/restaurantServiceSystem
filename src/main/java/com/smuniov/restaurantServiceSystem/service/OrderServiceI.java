@@ -31,11 +31,12 @@ public interface OrderServiceI {
     double checkDeposit(Client client, List<DishesInOrderDTO> dishesInOrderDTOList);
     void bookTable(int tableId);
     Order getOrderById (int id);
-    void processOrder(int orderId, Employee waiter, Employee cook);
+    //void processOrder(int orderId, Employee waiter, Employee cook);
+    void processOrder(int orderId);
     void finishOrder(Order order);
-    public void addSaveUpdateDish(Dish dish);
-    public List<Dish> getAllDishes();
-    public void deleteDish(int dishId);
-    public Optional getDish(int dishId);
+    void addSaveUpdateDish(Dish dish);
+    List<Dish> getAllDishes();
+    void deleteDish(int dishId);
+    Optional getDish(int dishId);
 
 }

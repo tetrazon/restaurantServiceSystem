@@ -5,12 +5,14 @@ import com.smuniov.restaurantServiceSystem.DTO.OrderDTO;
 import com.smuniov.restaurantServiceSystem.assembler.OrderDTOAssembler;
 import com.smuniov.restaurantServiceSystem.entity.food.DishesInOrder;
 import com.smuniov.restaurantServiceSystem.entity.order.Order;
+import com.smuniov.restaurantServiceSystem.entity.users.Client;
 import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import com.smuniov.restaurantServiceSystem.service.ClientServiceI;
 import com.smuniov.restaurantServiceSystem.service.EmployeeServiceI;
 import com.smuniov.restaurantServiceSystem.service.OrderServiceI;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -33,18 +36,21 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/orders")
 @RolesAllowed({"ROLE_CLIENT"})
+@Transactional
 public class OrdersController {
 
     private final OrderServiceI orderService;
     private final ClientServiceI clientService;
     private final EmployeeServiceI employeeService;
     private final OrderDTOAssembler orderDTOAssembler;
+    private final PagedResourcesAssembler pagedResourcesAssembler;
     public OrdersController(OrderServiceI orderService, ClientServiceI clientService,
-                            EmployeeServiceI employeeService, OrderDTOAssembler orderDTOAssembler) {
+                            EmployeeServiceI employeeService, OrderDTOAssembler orderDTOAssembler, PagedResourcesAssembler pagedResourcesAssembler) {
         this.orderService = orderService;
         this.clientService = clientService;
         this.employeeService = employeeService;
         this.orderDTOAssembler = orderDTOAssembler;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
 
@@ -64,8 +70,7 @@ public class OrdersController {
 
     @GetMapping(value="/history")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
-    public ResponseEntity<PagedModel<OrderDTO>> getOrders(@PageableDefault(page=0, size = 10, sort = {"timestamp"}, direction = Sort.Direction.DESC) Pageable pageable,
-                                                          PagedResourcesAssembler<Order> pagedResourcesAssembler){
+    public ResponseEntity<PagedModel<OrderDTO>> getOrders(@PageableDefault(page=0, size = 10, sort = {"timestamp"}, direction = Sort.Direction.DESC) Pageable pageable){
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int clientId = clientService.getClientByEmail(userDetails.getUsername()).getId();
@@ -81,25 +86,28 @@ public class OrdersController {
         return DishesInOrderDTO.toDTO(dishesInOrderList);
     }
 
+    //@Transactional
     @PostMapping(value = "/new")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity initOrder(@RequestBody OrderDTO orderDTO){
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int clientId = clientService.getClientByEmail(userDetails.getUsername()).getId();
-        OrderDTO orderDTOresp = orderService.orderInit(clientService.findById(clientId), orderDTO);
+        Client client = clientService.findById(clientId);
+        OrderDTO orderDTOresp = orderService.orderInit(client, orderDTO);
         return new ResponseEntity(orderDTOresp, HttpStatus.CREATED);
     }
 
+    //@Transactional
     @GetMapping(value = "/{orderId}/process")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<String> processOrder(@PathVariable int orderId){
-        Employee waiter = employeeService.getFree("WAITER");
-        Employee cook = employeeService.getFree("COOK");
-        orderService.processOrder(orderId, waiter, cook);
+
+        orderService.processOrder(orderId);
         return new ResponseEntity(orderService.getOrderById(orderId).getOrderStatus(), HttpStatus.OK);
     }
 
+    //@Transactional
     @GetMapping(value = "/{orderId}/finish")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<OrderDTO> finishOrder(@PathVariable int orderId){
@@ -107,9 +115,20 @@ public class OrdersController {
         OrderDTO orderDTO = new OrderDTO(orderService.getOrderById(orderId));
         orderDTO.add(linkTo(
                 methodOn(OrdersController.class)
-                        .getOrders(null, null))
-                .slash(orderDTO.getId())
+                        .getOrderDetail(orderDTO.getId()))
                 .withSelfRel());
+//                .add(linkTo(
+//                methodOn(OrdersController.class)
+//                        .getOrderDetail(orderDTO.getId()))
+//                .withSelfRel());
+        orderDTO.add(linkTo(OrdersController.class)
+                .slash("/history?sort={timestamp,invoice,orderStatus,tableId},{asc,desc}")
+                .withRel("all").withType("GET"));
+//                .add(linkTo(
+//                methodOn(OrdersController.class)
+//                        .getOrders(null))
+//                .slash(orderDTO.getId())
+//                .withSelfRel());
         return new ResponseEntity(orderDTO, HttpStatus.OK);
     }
 }

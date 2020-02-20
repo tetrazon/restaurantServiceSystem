@@ -4,6 +4,8 @@ import com.smuniov.restaurantServiceSystem.DTO.DishesInOrderDTO;
 import com.smuniov.restaurantServiceSystem.DTO.OrderDTO;
 import com.smuniov.restaurantServiceSystem.Exception.BadRequestException;
 import com.smuniov.restaurantServiceSystem.controller.OrdersController;
+import com.smuniov.restaurantServiceSystem.entity.enumeration.OrderStatus;
+import com.smuniov.restaurantServiceSystem.entity.enumeration.Position;
 import com.smuniov.restaurantServiceSystem.entity.food.Dish;
 import com.smuniov.restaurantServiceSystem.entity.food.DishesInOrder;
 import com.smuniov.restaurantServiceSystem.entity.order.Order;
@@ -15,6 +17,7 @@ import com.smuniov.restaurantServiceSystem.service.OrderServiceI;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -146,7 +149,11 @@ public class OrderServiceImpl implements OrderServiceI {
         orderDTOresp.add(linkTo(
                 methodOn(OrdersController.class)
                         .processOrder(orderDTOresp.getId()))
-                        .withRel("process"));
+                        .withRel("process").withType("GET"));
+        orderDTOresp.add(linkTo(
+                methodOn(OrdersController.class)
+                        .finishOrder(orderDTOresp.getId()))
+                .withRel("finish").withType("GET"));
         logger.info("client with id: " + client.getId() + " has created new order with id: " + order.getId());
         return orderDTOresp;
     }
@@ -175,45 +182,99 @@ public class OrderServiceImpl implements OrderServiceI {
     }
 
     @Override
-    public void processOrder(int orderId, Employee waiter, Employee cook) {
+    public void processOrder(int orderId) {
+
         Optional<Order> orderOptional = orderRepository.findById(orderId);
         if(orderOptional.isPresent()){
             Order orderToProcess = orderOptional.get();
-            String orderStatus = orderToProcess.getOrderStatus();
-            if (orderStatus.equals("IS_FINISHED")) {
-                throw new BadRequestException("you cannot process finished order!");
-            }
-            if (orderStatus.equals("NEW")) {
-                orderToProcess.setOrderStatus("IS_PROCESSING");
-                if (cook.getLoadFactor() == 5 && waiter.getLoadFactor() == 5) {
-                    orderToProcess.setOrderStatus("ALL_QUEUE");
-                    throw new BadRequestException(" no all kinds of employee!!!");
-                }
-                if (waiter.getLoadFactor() == 5) {
-                    orderToProcess.setOrderStatus("WAITER_QUEUE");
-                    orderRepository.save(orderToProcess);
-                    throw new BadRequestException(" no free waiters!!!");
-                }
-                if (cook.getLoadFactor() == 5) {
-                    orderToProcess.setOrderStatus("COOK_QUEUE");
-                    orderRepository.save(orderToProcess);
-                    throw new BadRequestException(" no free cooks!!!");
-                }
-
-                orderToProcess.setWaiter(waiter);
-                waiter.setLoadFactor(waiter.getLoadFactor() + 1);
-                orderToProcess.setCook(cook);
-                cook.setLoadFactor(cook.getLoadFactor() + 1);
-                employeeRepository.save(waiter);
-                employeeRepository.save(cook);
-            } else {
-                throw new BadRequestException(" no all kinds of employee, or some of them!!!");
+            defineResultOrderStatus(orderToProcess);
+            if(!orderToProcess.getOrderStatus().equals("IS_PROCESSING")){
+               logger.info("order status: " + orderToProcess.getOrderStatus());
             }
         } else {
             throw new BadRequestException(" no order present!!!");
         }
     }
 
+    private void changeEmployeeLoad(Employee employee, int load){
+        if(Math.abs(load) != 1){
+            throw new BadRequestException("Wrong load");
+        }
+        if(employee.getPosition().equals(Position.valueOf("MANAGER"))){
+            throw new BadRequestException("error choosing employee");
+        }
+        if(employee.getLoadFactor() == 5){
+            throw new BadRequestException("employee is overloaded, try again");
+        }
+        employee.setLoadFactor(employee.getLoadFactor() + load);
+    }
+
+    private String defineResultOrderStatus(Order orderToProcess){
+        Employee waiter = (Employee) employeeRepository.findAllByPositionOrderByLoadFactorAsc(Position.valueOf("WAITER")).get(0);
+        Employee cook = (Employee) employeeRepository.findAllByPositionOrderByLoadFactorAsc(Position.valueOf("COOK")).get(0);
+        String orderStatus = orderToProcess.getOrderStatus();
+        int cookLoadFactor = cook.getLoadFactor();
+        int waiterLoadFactor = waiter.getLoadFactor();
+        if (orderStatus == null){
+            throw new BadRequestException("bad order!");
+        }
+        if (orderStatus.equals("IS_FINISHED")) {
+            throw new BadRequestException("you cannot process finished order!");
+        }
+
+        if(orderStatus.equals("IS_PROCESSING")){
+            return orderStatus;
+        }
+        if (orderStatus.equals("NEW")) {
+            defineTempOrderStatus(orderToProcess, cook, waiter);
+        } else {
+            switch (orderStatus){
+                case "COOK_QUEUE":
+                    if (cookLoadFactor != 5){
+                        orderToProcess.setCook(cook);
+                        changeEmployeeLoad(cook, 1);
+                        orderToProcess.setOrderStatus("IS_PROCESSING");
+                        return orderToProcess.getOrderStatus();
+                    }
+                    break;
+                case "WAITER_QUEUE":
+                    if(waiterLoadFactor != 5){
+                        orderToProcess.setWaiter(waiter);
+                        changeEmployeeLoad(waiter, 1);
+                        orderToProcess.setOrderStatus("IS_PROCESSING");
+                    }
+                    break;
+                case "ALL_QUEUE":
+                    defineTempOrderStatus(orderToProcess, cook, waiter);
+                    break;
+                default:
+                    throw new BadRequestException("error order processing");
+            }
+        }
+        return orderStatus;
+    }
+
+    private void defineTempOrderStatus(Order order, Employee cook, Employee waiter){
+        int cookLoadFactor = cook.getLoadFactor();
+        int waiterLoadFactor = waiter.getLoadFactor();
+        if (cookLoadFactor == 5 && waiterLoadFactor == 5){
+            order.setOrderStatus("ALL_QUEUE");
+        } else if(cookLoadFactor == 5){
+            order.setOrderStatus("COOK_QUEUE");
+            order.setWaiter(waiter);
+            changeEmployeeLoad(waiter, 1);
+        } else if(waiterLoadFactor == 5){
+            order.setOrderStatus("WAITER_QUEUE");
+            order.setCook(cook);
+            changeEmployeeLoad(cook, 1);
+        } else {
+            order.setOrderStatus("IS_PROCESSING");
+            order.setCook(cook);
+            order.setWaiter(waiter);
+            changeEmployeeLoad(waiter, 1);
+            changeEmployeeLoad(cook, 1);
+        }
+    }
 
     public void finishOrder(Order order){
         if(order.getOrderStatus() == null ){
@@ -223,11 +284,9 @@ public class OrderServiceImpl implements OrderServiceI {
             throw new BadRequestException("you cannot finish order, which has no status IS_PROCESSING!");
         }
         Employee waiter = order.getWaiter();
-        waiter.setLoadFactor(waiter.getLoadFactor() - 1);
-        employeeRepository.save(waiter);
+        waiter.setLoadFactor(waiter.getLoadFactor() - 1);//updated automatically in hibernate, no need save(waiter)
         Employee cook = order.getCook();
         cook.setLoadFactor(cook.getLoadFactor() - 1);
-        employeeRepository.save(cook);
         Client client = order.getClient();
         List<DishesInOrder> dishesInOrderList = order.getDishes();
         double invoice = 0.;
@@ -235,13 +294,10 @@ public class OrderServiceImpl implements OrderServiceI {
             invoice += dishesInOrderList.get(i).getDish().getPrice()*dishesInOrderList.get(i).getQuantity();
         }
         client.setDeposit(client.getDeposit() - invoice);
-        clientRepository.save(client);
         order.setOrderStatus("IS_FINISHED");
         order.setInvoice(invoice);
-        orderRepository.save(order);
         Table table = order.getTable();
         table.setReserved(false);
-        tableRepository.save(table);
         logger.info("order with id " + order.getId() + " is finished");
     }
 

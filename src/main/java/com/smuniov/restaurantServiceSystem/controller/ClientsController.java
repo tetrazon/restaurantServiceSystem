@@ -18,6 +18,7 @@ import javax.annotation.security.RolesAllowed;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
+
 @RequestMapping("/clients")
 
 public class ClientsController {
