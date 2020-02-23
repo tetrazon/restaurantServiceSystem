@@ -27,9 +27,9 @@ public interface OrderServiceI {
     void changeTableStatus(Table table);
     Table findTableById(int id);
     boolean addDishesInOrder(List<DishesInOrderDTO> dishesInOrderDTOList);
-    OrderDTO orderInit(Client client, OrderDTO orderDTO);
+    OrderDTO initOrder(Client client, OrderDTO orderDTO);
     double checkDeposit(Client client, List<DishesInOrderDTO> dishesInOrderDTOList);
-    void bookTable(int tableId);
+    void reserveTable(int tableId);
     Order getOrderById (int id);
     //void processOrder(int orderId, Employee waiter, Employee cook);
     void processOrder(int orderId);

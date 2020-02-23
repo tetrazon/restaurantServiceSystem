@@ -14,13 +14,13 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class ClientServiceImplTest {
 
-        @InjectMocks
-        ClientServiceImpl clientService;
+    @InjectMocks
+    ClientServiceImpl clientService;
 
-        @Mock
-        private ClientRepository mockClientRepository;
-        @Mock
-        private EmployeeRepository mockEmployeeRepository;
+    @Mock
+    private ClientRepository mockClientRepository;
+    @Mock
+    private EmployeeRepository mockEmployeeRepository;
 
     @Test
     public void testCreateClient(){

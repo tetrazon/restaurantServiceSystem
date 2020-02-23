@@ -8,7 +8,6 @@ import com.smuniov.restaurantServiceSystem.repository.ClientRepository;
 import com.smuniov.restaurantServiceSystem.repository.EmployeeRepository;
 import com.smuniov.restaurantServiceSystem.service.EmployeeServiceI;
 import org.apache.logging.log4j.LogManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +40,7 @@ public class EmployeeServiceImpl implements EmployeeServiceI {
 
     public Page<UserDTO> getAll(Pageable pageable){
         List all = employeeRepository.findAll(pageable).getContent();
-        List<UserDTO> employeesDto = new UserDTO<Employee>().toDTO(all);
+        List<UserDTO> employeesDto = UserDTO.toDTOList(all);
         Page<UserDTO> employeeDTOPage= new PageImpl<>(employeesDto, pageable, employeesDto.size());
         return employeeDTOPage;
     }

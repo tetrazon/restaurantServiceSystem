@@ -7,10 +7,11 @@ import com.smuniov.restaurantServiceSystem.repository.ClientRepository;
 import com.smuniov.restaurantServiceSystem.repository.EmployeeRepository;
 import com.smuniov.restaurantServiceSystem.service.ClientServiceI;
 import org.apache.logging.log4j.LogManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +34,22 @@ public class ClientServiceImpl implements ClientServiceI {
     }
 
     @Override
-    public void update(Client client){
-        clientRepository.saveAndFlush(client);
+    public void update(UserDTO clientDTO){
+        if (clientDTO.getEmail() == null || clientDTO.getId() == 0){
+            throw new BadRequestException("bad user");
+        }
+        Client clientToUpdate = clientRepository.findByEmail(clientDTO.getEmail());
+        if (clientToUpdate == null){
+            throw new BadRequestException("user doesnt exist");
+        }
+        if (clientToUpdate.getId() != clientDTO.getId() || !clientToUpdate.getName().equals(clientDTO.getName())
+                || !clientToUpdate.getEmail().equals(clientDTO.getEmail())
+                || !clientToUpdate.getSurname().equals(clientDTO.getSurname())
+                || clientToUpdate.getCreated() != clientDTO.getCreated()
+        ){
+            throw new BadRequestException("wrong user data");
+        }
+        clientToUpdate.setDeposit(clientDTO.getDeposit());
     }
 
     @Override
@@ -71,7 +86,7 @@ public class ClientServiceImpl implements ClientServiceI {
 
     public Page<UserDTO> readAll(Pageable pageable){
         List<Client> clients = clientRepository.findAll(pageable).getContent();
-        List<UserDTO> clientsDto = new UserDTO<Client>().toDTO(clients);
+        List<UserDTO> clientsDto = UserDTO.toDTOList(clients);
         Page<UserDTO> userDTOPage= new PageImpl<>(clientsDto, pageable, clientsDto.size());
         return userDTOPage;
     }

@@ -59,7 +59,7 @@ public class ClientsControllerTest {
         List<Client> clients = new ArrayList<>();
         clients.add(new Client("rere@mail.ru", "1234", "Rere", "Rere", 0));
         clients.add(new Client("ololo@mail.ru", "1234", "Ololo", "Ololo", 0));
-        List<UserDTO> dtos = new UserDTO<Client>().toDTO(clients);
+        List<UserDTO> dtos = new UserDTO<Client>().toDTOList(clients);
         String userDTOString = "{\"id\":0,\"email\":\"rere@mail.ru\",\"name\":\"Rere\",\"surname\":\"Rere\",\"created\":0,\"position\":\"CLIENT\",\"deposit\":100.0}";
         String clientString = new ObjectMapper().writeValueAsString(clients.get(0));
         given(clientService.readAll(any(Pageable.class))).willReturn(new PageImpl<>(dtos, PageRequest.of(0, 10), clients.size()));

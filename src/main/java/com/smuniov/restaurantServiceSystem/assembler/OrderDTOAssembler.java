@@ -28,9 +28,11 @@ public class OrderDTOAssembler extends RepresentationModelAssemblerSupport<Order
                         .getOrderDetail(orderDTO.getId()))
                         //.getOrders(null))
                         //.slash(orderDTO.getId())
-                        .withSelfRel());
-        orderDTO.add(linkTo(OrdersController.class)
-                .slash("/history")
+                        .withSelfRel()
+                        .withType("GET"));
+        orderDTO.add(linkTo((methodOn(OrdersController.class)
+                //.slash("/history")
+                .getOrders(null)))
                 .withRel("all").withType("GET"));
         return orderDTO;
     }
@@ -38,14 +40,14 @@ public class OrderDTOAssembler extends RepresentationModelAssemblerSupport<Order
     @Override
     public CollectionModel<OrderDTO> toCollectionModel(Iterable<? extends Order> entities) {
         CollectionModel<OrderDTO> dtoCollectionModel = super.toCollectionModel(entities);
-//        dtoCollectionModel.add(linkTo(
-//                methodOn(OrdersController.class)
-//                .getOrders(null))
-//                .withSelfRel().withType("GET"));
         dtoCollectionModel.add(linkTo(
-                methodOn(OrdersController.class))
-                .slash("/history")
-                .withRel("all").withType("GET"));
+                methodOn(OrdersController.class)
+                .getOrders(null))
+                .withSelfRel().withType("GET"));
+//        dtoCollectionModel.add(linkTo(
+//                methodOn(OrdersController.class))
+//                .slash("/history")
+//                .withRel("all").withType("GET"));
         return dtoCollectionModel;
     }
 }

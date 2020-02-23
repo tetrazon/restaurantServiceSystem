@@ -69,7 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 and().
                     sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
                 and().
-                    logout().logoutSuccessUrl("/auth").permitAll();// is it work?
+                    logout().logoutSuccessUrl("/logout").permitAll();// is it work?
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
     }

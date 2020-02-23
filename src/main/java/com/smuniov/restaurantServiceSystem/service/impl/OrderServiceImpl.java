@@ -4,7 +4,6 @@ import com.smuniov.restaurantServiceSystem.DTO.DishesInOrderDTO;
 import com.smuniov.restaurantServiceSystem.DTO.OrderDTO;
 import com.smuniov.restaurantServiceSystem.Exception.BadRequestException;
 import com.smuniov.restaurantServiceSystem.controller.OrdersController;
-import com.smuniov.restaurantServiceSystem.entity.enumeration.OrderStatus;
 import com.smuniov.restaurantServiceSystem.entity.enumeration.Position;
 import com.smuniov.restaurantServiceSystem.entity.food.Dish;
 import com.smuniov.restaurantServiceSystem.entity.food.DishesInOrder;
@@ -17,13 +16,11 @@ import com.smuniov.restaurantServiceSystem.service.OrderServiceI;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -116,7 +113,7 @@ public class OrderServiceImpl implements OrderServiceI {
         return false;
     }
 
-    public OrderDTO orderInit(Client client, OrderDTO orderDTO){
+    public OrderDTO initOrder(Client client, OrderDTO orderDTO){
         if (orderDTO.getDishesInOrderDTOS().size() == 0){
             throw new BadRequestException("you cannot create empty order");
         }
@@ -142,7 +139,7 @@ public class OrderServiceImpl implements OrderServiceI {
         }
         dishesInOrderRepository.saveAll(dishesInOrderList);
         order.setDishes(dishesInOrderList);
-        bookTable(orderDTO.getTableId());
+        reserveTable(orderDTO.getTableId());
         order.setTable(tableRepository.findById(orderDTO.getTableId()));
         orderRepository.save(order);
         OrderDTO orderDTOresp = new OrderDTO(order);
@@ -167,10 +164,10 @@ public class OrderServiceImpl implements OrderServiceI {
         return client.getDeposit()-invoice;
     }
 
-    public void bookTable(int tableId){
+    public void reserveTable(int tableId){
         Table tableToBook = tableRepository.getOne(tableId);
         if (tableToBook.getIsReserved()) {
-            throw new BadRequestException("this table is booked, choose another one");
+            throw new BadRequestException("this table is reserved, choose another one");
         }
         tableToBook.setReserved(true);
         tableRepository.save(tableToBook);

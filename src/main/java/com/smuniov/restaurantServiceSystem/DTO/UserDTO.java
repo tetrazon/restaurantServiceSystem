@@ -3,6 +3,7 @@ package com.smuniov.restaurantServiceSystem.DTO;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smuniov.restaurantServiceSystem.DTO.Transfer.ClientDataAccess;
 import com.smuniov.restaurantServiceSystem.DTO.Transfer.UserDataAccess;
+import com.smuniov.restaurantServiceSystem.entity.users.Client;
 import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import com.smuniov.restaurantServiceSystem.entity.users.User;
 
@@ -34,7 +35,11 @@ public class UserDTO <T extends User> {
         name = user.getName();
         surname = user.getSurname();
         created = user.getCreated();
-        if(user.getClass().equals(com.smuniov.restaurantServiceSystem.entity.users.Client.class)){
+        initPositionAndDeposit(user);
+    }
+
+    private void initPositionAndDeposit(T user) {
+        if(user instanceof Client){
             position = "CLIENT";
             com.smuniov.restaurantServiceSystem.entity.users.Client client =
                     (com.smuniov.restaurantServiceSystem.entity.users.Client) user;
@@ -45,12 +50,16 @@ public class UserDTO <T extends User> {
         }
     }
 
-    public List<UserDTO> toDTO(List<T> users){
+    public static <T extends User> List<UserDTO> toDTOList(List<T> users){
         List<UserDTO> usersDTO = new ArrayList<>();
         for (int i = 0; i < users.size(); i++){
-            usersDTO.add(new UserDTO(users.get(i)));
+            usersDTO.add(UserDTO.toDTO(users.get(i)));
         }
         return usersDTO;
+    }
+
+    public static <T extends User> UserDTO toDTO(T user){
+        return new UserDTO(user);
     }
 
     public int getId() {
@@ -99,5 +108,13 @@ public class UserDTO <T extends User> {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    public double getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(double deposit) {
+        this.deposit = deposit;
     }
 }

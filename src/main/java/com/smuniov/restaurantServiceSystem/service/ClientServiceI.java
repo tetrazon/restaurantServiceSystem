@@ -12,7 +12,7 @@ public interface ClientServiceI{
 
     void create(Client client);
     void delete(Integer id);
-    void update(Client client);
+    void update(UserDTO clientDTO);
     Client getClientByEmail(String emailToCheck);
     Client findById(Integer id);
     Page<UserDTO> readAll(Pageable pageable);

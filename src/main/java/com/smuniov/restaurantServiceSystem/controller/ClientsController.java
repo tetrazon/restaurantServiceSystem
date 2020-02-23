@@ -11,16 +11,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 
 import static org.springframework.http.HttpStatus.*;
 
+@Transactional
 @RestController
-
 @RequestMapping("/clients")
-
 public class ClientsController {
 
 
@@ -43,8 +43,9 @@ public class ClientsController {
     @GetMapping(value="/{id}")
     @RolesAllowed("ROLE_MANAGER")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
-    public Client getClient(@PathVariable int id){
-        return clientService.findById(id);
+    public UserDTO getClient(@PathVariable int id){
+        UserDTO<Client> clientDTO = UserDTO.toDTO(clientService.findById(id));
+        return clientDTO;
     }
 
     @DeleteMapping(value="/{id}")
@@ -58,10 +59,8 @@ public class ClientsController {
     @PutMapping
     @RolesAllowed("ROLE_MANAGER")
     @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", required = true, dataType = "string", paramType = "header")})
-    public  ResponseEntity updateClient(@RequestBody Client client){
-        if (client == null){
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
+    public  ResponseEntity updateClientDeposit(@RequestBody UserDTO client){
+
         clientService.update(client);
         return new ResponseEntity(OK);
     }

@@ -6,13 +6,11 @@ import com.smuniov.restaurantServiceSystem.assembler.OrderDTOAssembler;
 import com.smuniov.restaurantServiceSystem.entity.food.DishesInOrder;
 import com.smuniov.restaurantServiceSystem.entity.order.Order;
 import com.smuniov.restaurantServiceSystem.entity.users.Client;
-import com.smuniov.restaurantServiceSystem.entity.users.Employee;
 import com.smuniov.restaurantServiceSystem.service.ClientServiceI;
 import com.smuniov.restaurantServiceSystem.service.EmployeeServiceI;
 import com.smuniov.restaurantServiceSystem.service.OrderServiceI;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -94,7 +92,7 @@ public class OrdersController {
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int clientId = clientService.getClientByEmail(userDetails.getUsername()).getId();
         Client client = clientService.findById(clientId);
-        OrderDTO orderDTOresp = orderService.orderInit(client, orderDTO);
+        OrderDTO orderDTOresp = orderService.initOrder(client, orderDTO);
         return new ResponseEntity(orderDTOresp, HttpStatus.CREATED);
     }
 
